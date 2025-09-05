@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { auth as adminAuth } from 'firebase-admin';
 import { initializeAdminApp } from '@/lib/firebase-admin';
 
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   const { idToken } = await req.json();
 
