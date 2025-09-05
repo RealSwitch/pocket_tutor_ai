@@ -2,17 +2,20 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { MainLayout } from '@/components/main-layout';
+import { AuthProvider } from './auth/auth-context';
+import { getCurrentUser } from './auth/session';
 
 export const metadata: Metadata = {
   title: 'Learnify',
   description: 'A Gamified Learning Platform',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -28,7 +31,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <MainLayout>{children}</MainLayout>
+        <AuthProvider user={user}>
+          <MainLayout>{children}</MainLayout>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

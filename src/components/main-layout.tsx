@@ -25,7 +25,6 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +37,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
+import { useAuth } from "@/app/auth/auth-context";
+import { signOut } from "@/app/auth/actions";
+import { redirect } from "next/navigation";
+
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutGrid },
@@ -46,8 +49,30 @@ const navItems = [
   { href: "#", label: "Profile", icon: User },
 ];
 
+const unprotectedRoutes = ['/login', '/signup'];
+
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  
+  React.useEffect(() => {
+    if (!loading && !user && !unprotectedRoutes.includes(pathname)) {
+        redirect('/login');
+    }
+  }, [pathname, user, loading]);
+
+
+  if (unprotectedRoutes.includes(pathname)) {
+    return <main className="flex-1">{children}</main>;
+  }
+  
+  if (loading) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    )
+  }
 
   return (
     <SidebarProvider>
@@ -112,6 +137,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 }
 
 function UserMenu() {
+    const { user } = useAuth();
+    
+    const handleSignOut = async () => {
+        await signOut();
+    }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -120,10 +151,10 @@ function UserMenu() {
           className="relative flex items-center gap-2 p-1 h-10 rounded-full"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://picsum.photos/id/1012/100/100" alt="User" data-ai-hint="person photo" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src={user?.picture} alt={user?.email || 'User'} data-ai-hint="person photo" />
+            <AvatarFallback>{user?.email?.[0].toUpperCase()}</AvatarFallback>
           </Avatar>
-          <span className="hidden sm:inline-block text-sm">Learner</span>
+          <span className="hidden sm:inline-block text-sm">{user?.email}</span>
           <ChevronDown className="h-4 w-4 hidden sm:inline-block text-muted-foreground"/>
         </Button>
       </DropdownMenuTrigger>
@@ -139,7 +170,7 @@ function UserMenu() {
           <span>Settings</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2" />
           <span>Log out</span>
         </DropdownMenuItem>
