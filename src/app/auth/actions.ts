@@ -4,8 +4,6 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
 } from 'firebase/auth';
 import { app } from '@/lib/firebase';
 import { redirect } from 'next/navigation';
@@ -59,17 +57,6 @@ export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
   }
   redirect('/');
 }
-
-export async function signInWithGoogle() {
-    // This function can't be implemented fully on the server,
-    // as it requires user interaction. We will trigger it on client,
-    // get the ID token and then post it here to create a session.
-    // The client-side logic will be in the LoginForm.
-    // This is a placeholder for what happens after Google sign-in on the client.
-    // This function will be called from the client with the token.
-    // For now, we leave it as a server action that can be called from client components
-}
-
 
 export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
   try {
