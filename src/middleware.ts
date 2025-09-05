@@ -1,20 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getCurrentUser } from './app/auth/session';
 
 export async function middleware(request: NextRequest) {
-  const user = await getCurrentUser();
-  const { pathname } = request.nextUrl;
-
-  const unprotectedRoutes = ['/login', '/signup'];
-
-  if (!user && !unprotectedRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  if (user && unprotectedRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
+  // Middleware logic can be added here if needed in the future.
+  // For now, we are letting the client-side auth context handle route protection.
   return NextResponse.next();
 }
 
