@@ -62,11 +62,13 @@ export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
   try {
     const validatedValues = emailSchema.parse(values);
     const auth = getAuth(app);
-    await createUserWithEmailAndPassword(
+    const userCredential = await createUserWithEmailAndPassword(
       auth,
       validatedValues.email,
       validatedValues.password
     );
+     const idToken = await userCredential.user.getIdToken();
+     await setSessionCookie(idToken);
   } catch (error: any) {
      let errorMessage = 'An unexpected error occurred.';
     if (error.code) {
@@ -87,7 +89,7 @@ export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
     }
     return { error: errorMessage };
   }
-  redirect('/login');
+  redirect('/');
 }
 
 export async function signOut() {
