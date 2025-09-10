@@ -57,4 +57,22 @@ export const curriculumData: Curriculum = {
       { id: 'ps10-c3', title: 'Chapter 3: The Atom' },
     ],
   },
+  11: {
+    Mathematics: [
+      { id: 'm11-c1', title: 'Chapter 1: Exponents and surds' },
+      { id: 'm11-c2', title: 'Chapter 2: Equations and inequalities' },
+      { id: 'm11-c3', title: 'Chapter 3: Number patterns' },
+      { id: 'm11-c4', title: 'Chapter 4: Analytical geometry' },
+      { id: 'm11-c5', title: 'Chapter 5: Functions' },
+    ],
+  },
+  12: {
+    Mathematics: [
+        { id: 'm12-c1', title: 'Chapter 1: Sequences and series' },
+        { id: 'm12-c2', title: 'Chapter 2: Functions' },
+        { id: 'm12-c3', title: 'Chapter 3: Calculus' },
+        { id: 'm12-c4', title: 'Chapter 4: Financial mathematics' },
+        { id: 'm12-c5', title: 'Chapter 5: Probability' },
+    ],
+  },
 };

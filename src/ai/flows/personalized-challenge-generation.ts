@@ -60,6 +60,8 @@ const personalizedChallengePrompt = ai.definePrompt({
   2. One or two follow-up sub-questions that can be of different types (e.g., multiple-choice, true/false, or short-answer).
   3. A detailed, step-by-step solution to all parts of the question.
 
+  For all mathematical content (variables, equations, fractions, symbols, etc.), you MUST format it using LaTeX syntax. For example, use '$x^2 + y^2 = r^2$' for equations or '$\\frac{1}{2}$' for fractions.
+
   Ensure the difficulty level is adapted to the student's individual learning progress. For example, if the student struggles with algebraic equations, provide a foundational question to build their confidence.
   IMPORTANT: Do not include the solution in the problem description or sub-questions. The solution must be a separate field.
 `,

@@ -22,6 +22,8 @@ import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles, Star } from "lucid
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import Latex from 'react-latex-next';
+import 'katex/dist/katex.min.css';
 
 export function ChallengeView({
   initialChallenge,
@@ -252,11 +254,11 @@ export function ChallengeView({
             ) : (
               <>
                 <p className="font-semibold text-card-foreground leading-relaxed">
-                  {challenge.problem}
+                  <Latex>{challenge.problem}</Latex>
                 </p>
                 <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
                   {challenge.subQuestions.map((sq, index) => (
-                    <li key={index}>{sq.question}</li>
+                    <li key={index}><Latex>{sq.question}</Latex></li>
                   ))}
                 </ul>
               </>
@@ -282,7 +284,7 @@ export function ChallengeView({
               <Alert variant="default" className="bg-muted/50">
                 <Lightbulb className="h-4 w-4" />
                 <AlertTitle>Solution</AlertTitle>
-                <AlertDescription className="whitespace-pre-wrap">{challenge.solution}</AlertDescription>
+                <AlertDescription className="whitespace-pre-wrap"><Latex>{challenge.solution}</Latex></AlertDescription>
               </Alert>
             )}
           </div>
