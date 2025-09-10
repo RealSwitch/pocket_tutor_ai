@@ -20,10 +20,14 @@ const PersonalizedChallengeInputSchema = z.object({
 export type PersonalizedChallengeInput = z.infer<typeof PersonalizedChallengeInputSchema>;
 
 const PersonalizedChallengeOutputSchema = z.object({
-  challengeType: z.string().describe('The type of challenge generated (e.g., "Multiple Choice Question", "Short Answer Question", "Problem Set").'),
-  challengeDescription: z.string().describe('A detailed description of the challenge, including instructions and objectives.'),
-  difficultyLevel: z.string().describe('The difficulty level of the challenge (e.g., easy, medium, hard), adjusted based on the student\'s learning history.'),
   topic: z.string().describe('The specific topic covered by the challenge (e.g., fractions, ledger balancing, ecosystems).'),
+  difficultyLevel: z.string().describe('The difficulty level of the challenge (e.g., easy, medium, hard), adjusted based on the student\'s learning history.'),
+  problem: z.string().describe('The main question or problem to solve.'),
+  subQuestions: z.array(z.object({
+    type: z.string().describe('The type of sub-question (e.g., "multiple-choice", "true/false", "short-answer").'),
+    question: z.string().describe('The sub-question text.'),
+  })).describe('A list of follow-up sub-questions.'),
+  solution: z.string().describe('A detailed, step-by-step solution to all parts of the question.'),
 });
 export type PersonalizedChallengeOutput = z.infer<typeof PersonalizedChallengeOutputSchema>;
 
@@ -46,12 +50,13 @@ const personalizedChallengePrompt = ai.definePrompt({
 
   Generate a challenge that is appropriate for the student's level and learning needs. The challenge should be engaging, educational, and prevent copying.
   
-  The challenge description should contain:
-  1. A main question or problem to solve.
+  The challenge must contain:
+  1. A main problem or question to solve.
   2. One or two follow-up sub-questions that can be of different types (e.g., multiple-choice, true/false, or short-answer).
   3. A detailed, step-by-step solution to all parts of the question.
 
   Ensure the difficulty level is adapted to the student's individual learning progress. For example, if the student struggles with algebraic equations, provide a foundational question to build their confidence.
+  IMPORTANT: Do not include the solution in the problem description or sub-questions. The solution must be a separate field.
 `,
 });
 

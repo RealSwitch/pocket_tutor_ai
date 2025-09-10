@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
-import { createChallenge } from "../actions";
+import type { EvaluateAnswerOutput } from "@/ai/flows/evaluate-answer-flow";
+import { createChallenge, evaluateStudentAnswer } from "../actions";
 import { generateMathTheme } from "@/ai/flows/math-theme-generation";
 import {
   Card,
@@ -14,7 +15,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Zap, Lightbulb, RefreshCw, Check } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -27,15 +30,20 @@ export function ChallengeView({
 }) {
   const [challenge, setChallenge] = useState(initialChallenge);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEvaluating, setIsEvaluating] = useState(false);
   const [progress, setProgress] = useState(30);
   const [backgroundSvg, setBackgroundSvg] = useState<string | null>(null);
+  const [answer, setAnswer] = useState("");
+  const [evaluationResult, setEvaluationResult] = useState<EvaluateAnswerOutput | null>(null);
+  const [showSolution, setShowSolution] = useState(false);
 
   const fetchBackground = async (topic: string) => {
     if (subject.toLowerCase() === "mathematics") {
       try {
         const theme = await generateMathTheme({ topic });
         setBackgroundSvg(theme.svgBackground);
-      } catch (error) {
+      } catch (error)
+      {
         console.error("Error generating math theme:", error);
         setBackgroundSvg(null);
       }
@@ -49,10 +57,30 @@ export function ChallengeView({
   const handleNewChallenge = async () => {
     setIsLoading(true);
     setBackgroundSvg(null);
+    setAnswer("");
+    setEvaluationResult(null);
+    setShowSolution(false);
     const newChallenge = await createChallenge(subject);
     setChallenge(newChallenge);
     setProgress(Math.floor(Math.random() * 50) + 20); // Randomize progress
     setIsLoading(false);
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!answer.trim()) return;
+    setIsEvaluating(true);
+    setEvaluationResult(null);
+    const fullProblem = `${challenge.problem}\n\n${challenge.subQuestions.map(q => q.question).join('\n')}`;
+    const result = await evaluateStudentAnswer({
+      problem: fullProblem,
+      solution: challenge.solution,
+      studentAnswer: answer,
+    });
+    setEvaluationResult(result);
+    if(result.isCorrect) {
+      setProgress(prev => Math.min(100, prev + 25));
+    }
+    setIsEvaluating(false);
   };
 
   const getDifficultyColor = (level: string) => {
@@ -67,6 +95,12 @@ export function ChallengeView({
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+  
+    const getFeedbackColor = () => {
+    if (!evaluationResult) return "";
+    return evaluationResult.isCorrect ? "border-green-500 bg-green-50" : "border-amber-500 bg-amber-50";
+  };
+
 
   const backgroundStyle: React.CSSProperties = backgroundSvg
     ? {
@@ -120,7 +154,7 @@ export function ChallengeView({
             </div>
             <Progress value={progress} className="h-2" />
           </div>
-          <div className="p-4 border rounded-lg min-h-[120px] bg-background/70">
+          <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
             {isLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-4 w-full" />
@@ -129,27 +163,54 @@ export function ChallengeView({
               </div>
             ) : (
               <>
-                <p className="font-semibold text-card-foreground mb-2">
-                  {challenge.challengeType}
+                <p className="font-semibold text-card-foreground leading-relaxed">
+                  {challenge.problem}
                 </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  {challenge.challengeDescription}
-                </p>
+                <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
+                  {challenge.subQuestions.map((sq, index) => (
+                    <li key={index}>{sq.question}</li>
+                  ))}
+                </ul>
               </>
+            )}
+          </div>
+
+          <div className="space-y-4">
+             <Textarea
+                placeholder="Type your answer here..."
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                className="min-h-[100px] bg-background/70"
+                disabled={isEvaluating || isLoading}
+             />
+             {evaluationResult && (
+                 <Alert className={getFeedbackColor()}>
+                   <Sparkles className="h-4 w-4" />
+                   <AlertTitle>Feedback</AlertTitle>
+                   <AlertDescription>{evaluationResult.feedback}</AlertDescription>
+                 </Alert>
+             )}
+            {showSolution && (
+                 <Alert variant="default" className="bg-muted/50">
+                   <Lightbulb className="h-4 w-4" />
+                   <AlertTitle>Solution</AlertTitle>
+                   <AlertDescription className="whitespace-pre-wrap">{challenge.solution}</AlertDescription>
+                 </Alert>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
           <div className="flex gap-2">
-            <Button variant="outline" disabled={isLoading}>
-              <Lightbulb className="mr-2 h-4 w-4" /> Hint
+            <Button variant="outline" onClick={() => setShowSolution(!showSolution)} disabled={isLoading}>
+              <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Hide" : "Show"} Solution
             </Button>
             <Button
-              variant="default"
               className="bg-green-600 hover:bg-green-700"
-              disabled={isLoading}
+              disabled={isLoading || isEvaluating || !answer.trim()}
+              onClick={handleSubmitAnswer}
             >
-              <Check className="mr-2 h-4 w-4" /> Submit
+              {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+               Submit
             </Button>
           </div>
           <Button
