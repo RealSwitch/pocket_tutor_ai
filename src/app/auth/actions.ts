@@ -24,23 +24,29 @@ function createMockSessionData(email: string): SessionData {
     };
 }
 
-export async function signInWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true; session: SessionData } | { error: string }> {
+export async function signInWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true } | { error: string }> {
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
-    // The form on the client will now handle setting the cookie.
-    return { success: true, session: sessionData };
+    cookies().set('session', JSON.stringify(sessionData), {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 5, // 5 days
+    });
+    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-in.' };
   }
 }
 
-export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true; session: SessionData } | { error: string }> {
+export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true } | { error: string }> {
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
-     // The form on the client will now handle setting the cookie.
-    return { success: true, session: sessionData };
+    cookies().set('session', JSON.stringify(sessionData), {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 5, // 5 days
+    });
+    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-up.' };
   }

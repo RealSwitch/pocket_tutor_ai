@@ -18,8 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { signUpWithEmail } from '../auth/actions';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -30,7 +28,6 @@ const formSchema = z.object({
 
 export function SignUpForm() {
   const { toast } = useToast();
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,9 +45,8 @@ export function SignUpForm() {
         description: result.error,
       });
     } else if (result.success) {
-      Cookies.set('session', JSON.stringify(result.session), { expires: 5 });
-      router.push('/');
-      router.refresh(); // Ensures the layout re-renders with the new auth state
+      // Force a full page reload to ensure the new cookie is read
+      window.location.href = '/';
     }
   }
 

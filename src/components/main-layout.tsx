@@ -41,8 +41,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
 import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
-import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
 
 
 const navItems = [
@@ -139,13 +137,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
 function UserMenu() {
     const { user } = useAuth();
-    const router = useRouter();
     
     const handleSignOut = async () => {
         await signOut();
-        Cookies.remove('session');
-        router.push('/login');
-        router.refresh();
+        window.location.href = '/login';
     }
 
   return (
