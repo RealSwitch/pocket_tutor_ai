@@ -1,9 +1,5 @@
 
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
 import {
   LayoutGrid,
   Trophy,
@@ -16,7 +12,8 @@ import {
   ChevronDown,
   School,
 } from "lucide-react";
-import { useAuth, type User as AuthUser } from "@/app/auth/auth-context";
+import type { User as AuthUser } from "@/app/auth/auth-context";
+import { getSession } from "@/app/auth/session";
 
 import {
   SidebarProvider,
@@ -41,6 +38,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
 import { signOut } from "@/app/auth/actions";
+import { headers } from "next/headers";
 
 
 const navItems = [
@@ -51,22 +49,24 @@ const navItems = [
   { href: "#", label: "Profile", icon: User },
 ];
 
-const unprotectedRoutes = ['/login', '/signup'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const user = useAuth();
-  
-  if (unprotectedRoutes.includes(pathname)) {
+  const user = getSession();
+  const headersList = headers();
+  const pathname = headersList.get('x-pathname') || '/';
+
+  // If we are on an auth page, just render the children.
+  if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
     return <main className="flex-1">{children}</main>;
   }
 
-  // The middleware now handles redirects, so we can render the layout skeleton.
+  // Since middleware protects all other pages, we can assume user is not null.
+  // We add this check for type safety and as a fallback.
   if (!user) {
-    // You might want to show a loading spinner here while the session is being verified.
-    return null; 
+    // This case should ideally not be reached due to middleware.
+    // You could render a loading state or a fallback UI.
+    return null;
   }
-
 
   return (
     <SidebarProvider>
@@ -135,7 +135,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function UserMenu({ user }: { user: AuthUser | null }) {
+// UserMenu needs to be a client component because it uses hooks for actions.
+function UserMenu({ user }: { user: AuthUser }) {
     
     const handleSignOut = async () => {
         await signOut();
