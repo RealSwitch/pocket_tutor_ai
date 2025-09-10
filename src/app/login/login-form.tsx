@@ -3,6 +3,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useFormStatus } from 'react-dom';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,11 +15,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { signInWithEmail } from '../auth/actions';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -27,9 +26,24 @@ const formSchema = z.object({
     .min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      className="w-full"
+      disabled={pending}
+    >
+      {pending && (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      )}
+      Sign in
+    </Button>
+  );
+}
+
 export function LoginForm() {
-  const { toast } = useToast();
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,26 +52,10 @@ export function LoginForm() {
     },
   });
 
-  const { isSubmitting } = form.formState;
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await signInWithEmail(values);
-
-    if (result?.error) {
-      toast({
-        variant: 'destructive',
-        title: 'Authentication Error',
-        description: result.error,
-      });
-    } else if (result?.success) {
-      router.push('/');
-    }
-  }
-
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form action={signInWithEmail} className="space-y-6">
           <FormField
             control={form.control}
             name="email"
@@ -93,16 +91,7 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting}
-          >
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Sign in
-          </Button>
+          <SubmitButton />
         </form>
       </Form>
       <div className="mt-6">

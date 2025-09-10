@@ -25,39 +25,37 @@ function createMockSessionData(email: string): SessionData {
 }
 
 export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
-  try {
-    const validatedValues = emailSchema.parse(values);
-    // In a real app, you'd validate credentials against a database here.
-    const sessionData = createMockSessionData(validatedValues.email);
-    cookies().set('session', JSON.stringify(sessionData), {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 5, // 5 days
-    });
-    return { success: true };
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      return { error: 'Invalid email or password format.' };
-    }
-    return { error: 'An unexpected error occurred during sign-in.' };
+  // In a real app, you'd validate credentials against a database here.
+  const validated = emailSchema.safeParse(values);
+  if (!validated.success) {
+    // This won't be shown to the user with this pattern,
+    // but it's good practice for validation.
+    return { error: 'Invalid form data.' };
   }
+
+  const sessionData = createMockSessionData(validated.data.email);
+  cookies().set('session', JSON.stringify(sessionData), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 5, // 5 days
+  });
+  
+  redirect('/');
 }
 
 export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
-  try {
-    const validatedValues = emailSchema.parse(values);
-     // In a real app, you'd create a new user in the database here.
-    const sessionData = createMockSessionData(validatedValues.email);
-    cookies().set('session', JSON.stringify(sessionData), {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 5, // 5 days
-    });
-    return { success: true };
-  } catch (error: any) {
-     if (error instanceof z.ZodError) {
-      return { error: 'Invalid email or password format.' };
-    }
-    return { error: 'An unexpected error occurred during sign-up.' };
-  }
+   // In a real app, you'd create a new user in the database here.
+   const validated = emailSchema.safeParse(values);
+   if (!validated.success) {
+     return { error: 'Invalid form data.' };
+   }
+
+  const sessionData = createMockSessionData(validated.data.email);
+  cookies().set('session', JSON.stringify(sessionData), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 5, // 5 days
+  });
+
+  redirect('/');
 }
 
 export async function signOut() {
