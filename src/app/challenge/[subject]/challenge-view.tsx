@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
 import { createChallenge } from "../actions";
+import { generateMathTheme } from "@/ai/flows/math-theme-generation";
 import {
   Card,
   CardContent,
@@ -27,9 +28,27 @@ export function ChallengeView({
   const [challenge, setChallenge] = useState(initialChallenge);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(30);
+  const [backgroundSvg, setBackgroundSvg] = useState<string | null>(null);
+
+  const fetchBackground = async (topic: string) => {
+    if (subject.toLowerCase() === "mathematics") {
+      try {
+        const theme = await generateMathTheme({ topic });
+        setBackgroundSvg(theme.svgBackground);
+      } catch (error) {
+        console.error("Error generating math theme:", error);
+        setBackgroundSvg(null);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchBackground(challenge.topic);
+  }, [challenge.topic, subject]);
 
   const handleNewChallenge = async () => {
     setIsLoading(true);
+    setBackgroundSvg(null);
     const newChallenge = await createChallenge(subject);
     setChallenge(newChallenge);
     setProgress(Math.floor(Math.random() * 50) + 20); // Randomize progress
@@ -49,9 +68,21 @@ export function ChallengeView({
     }
   };
 
+  const backgroundStyle: React.CSSProperties = backgroundSvg
+    ? {
+        backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
+          backgroundSvg
+        )}")`,
+        backgroundSize: "cover",
+      }
+    : {};
+
   return (
-    <div className="flex-1 flex items-center justify-center">
-      <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500">
+    <div
+      className="flex-1 flex items-center justify-center p-4 transition-all duration-1000"
+      style={backgroundStyle}
+    >
+      <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500 bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
@@ -60,7 +91,11 @@ export function ChallengeView({
                 {subject} Challenge
               </CardTitle>
               <CardDescription>
-                {isLoading ? <Skeleton className="h-4 w-48 mt-1" /> : challenge.topic}
+                {isLoading ? (
+                  <Skeleton className="h-4 w-48 mt-1" />
+                ) : (
+                  challenge.topic
+                )}
               </CardDescription>
             </div>
             {isLoading ? (
@@ -68,7 +103,9 @@ export function ChallengeView({
             ) : (
               <Badge
                 variant="outline"
-                className={`text-sm ${getDifficultyColor(challenge.difficultyLevel)}`}
+                className={`text-sm ${getDifficultyColor(
+                  challenge.difficultyLevel
+                )}`}
               >
                 {challenge.difficultyLevel}
               </Badge>
@@ -83,7 +120,7 @@ export function ChallengeView({
             </div>
             <Progress value={progress} className="h-2" />
           </div>
-          <div className="p-4 border rounded-lg min-h-[120px] bg-background">
+          <div className="p-4 border rounded-lg min-h-[120px] bg-background/70">
             {isLoading ? (
               <div className="space-y-2">
                 <Skeleton className="h-4 w-full" />
@@ -92,7 +129,9 @@ export function ChallengeView({
               </div>
             ) : (
               <>
-                <p className="font-semibold text-primary-foreground mb-2">{challenge.challengeType}</p>
+                <p className="font-semibold text-card-foreground mb-2">
+                  {challenge.challengeType}
+                </p>
                 <p className="text-muted-foreground leading-relaxed">
                   {challenge.challengeDescription}
                 </p>

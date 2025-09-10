@@ -14,7 +14,7 @@ export default async function ChallengePage({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-4">
+      <div className="mb-4 absolute top-6 left-6 z-10">
         <Button asChild variant="outline" size="sm">
           <Link href="/" className="flex items-center gap-2">
             <ChevronLeft className="h-4 w-4" />
