@@ -92,6 +92,7 @@ const leaderboard = [
 ];
 
 export default function Dashboard() {
+  const progressValue = (3510 / 4000) * 100;
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1">
@@ -145,7 +146,7 @@ export default function Dashboard() {
                   <span>Level 12</span>
                   <span className="text-muted-foreground">3510 / 4000 XP</span>
                 </div>
-                <Progress value={(3510 / 4000) * 100} />
+                <Progress value={progressValue} />
               </div>
 
               <div className="space-y-2">
