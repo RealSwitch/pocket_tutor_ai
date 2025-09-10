@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/table';
 import { AddStudentDialog } from './add-student-dialog';
 import { Progress } from '@/components/ui/progress';
+import { ChatRoom } from './chatroom';
 
 
 export default function ClassroomPage({ params }: { params: { id: string } }) {
@@ -46,8 +47,8 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3 space-y-6">
            <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Students</CardTitle>
@@ -93,34 +94,8 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Classroom Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-               <div className="flex items-center gap-2 text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{classroom.studentCount} Students</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <BookOpen className="h-4 w-4" />
-                <span>{classroom.moduleCount} Modules</span>
-              </div>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader  className="flex flex-row items-center justify-between">
-              <CardTitle>Modules</CardTitle>
-               <Button size="sm" variant="secondary">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Module
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm">No modules added yet.</p>
-            </CardContent>
-           </Card>
+        <div className="lg:col-span-2 space-y-6">
+          <ChatRoom />
         </div>
       </div>
     </div>
