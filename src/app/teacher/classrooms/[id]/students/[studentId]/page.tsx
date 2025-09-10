@@ -1,4 +1,6 @@
 
+'use client';
+
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { mockClassrooms } from '@/lib/mock-data';
