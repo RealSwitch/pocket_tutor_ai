@@ -2,8 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 
 export async function getCurrentUser() {
-  const cookieStore = cookies();
-  const sessionCookie = cookieStore.get('session')?.value;
+  const sessionCookie = cookies().get('session')?.value;
 
   if (!sessionCookie) {
     return null;
