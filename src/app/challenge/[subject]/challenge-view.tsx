@@ -301,7 +301,7 @@ export function ChallengeView({
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
                     className="min-h-[100px] bg-background/70"
-                    disabled={isEvaluating || evaluationResult?.isCorrect}
+                    disabled={isEvaluating || evaluationResult?.isCorrect || showSolution}
                     />
                     {evaluationResult && (
                     <Alert className={getFeedbackColor()}>
@@ -326,7 +326,7 @@ export function ChallengeView({
                     </Button>
                     <Button
                     className="bg-green-600 hover:bg-green-700"
-                    disabled={isEvaluating || !answer.trim() || evaluationResult?.isCorrect}
+                    disabled={isEvaluating || !answer.trim() || evaluationResult?.isCorrect || showSolution}
                     onClick={handleSubmitAnswer}
                     >
                     {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
@@ -336,7 +336,7 @@ export function ChallengeView({
                 <Button
                     variant="secondary"
                     onClick={() => onNewChallenge(xp === 0)}
-                    disabled={!evaluationResult?.isCorrect}
+                    disabled={!evaluationResult?.isCorrect && !showSolution}
                 >
                     <RefreshCw className="mr-2 h-4 w-4" />
                     New Challenge
