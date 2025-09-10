@@ -33,13 +33,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { SelectGrade } from '@/components/select-grade';
-import { ChapterSelection } from '@/components/chapter-selection';
-import { curriculumData } from '@/lib/curriculum-data';
-import type { Subject as CurriculumSubject, Chapter } from '@/lib/curriculum-data';
 
 type Subject = {
-  name: CurriculumSubject;
+  name: string;
   description: string;
   icon: LucideIcon;
   href: string;
@@ -100,30 +96,6 @@ const leaderboard = [
 ];
 
 export default function Dashboard() {
-  const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
-  const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<CurriculumSubject | null>(null);
-
-  const handleGradeChange = (grade: string) => {
-    setSelectedGrade(grade);
-    // When grade changes, if a subject is already selected, update chapters
-    if (selectedSubject) {
-      const gradeNumber = parseInt(grade.replace('grade-', ''));
-      const subjectChapters = curriculumData[gradeNumber]?.[selectedSubject] || [];
-      setChapters(subjectChapters);
-    }
-  };
-
-  const handleSubjectClick = (subjectName: CurriculumSubject) => {
-    setSelectedSubject(subjectName);
-    // When subject changes, if a grade is already selected, update chapters
-    if (selectedGrade) {
-        const gradeNumber = parseInt(selectedGrade.replace('grade-', ''));
-        const subjectChapters = curriculumData[gradeNumber]?.[subjectName] || [];
-        setChapters(subjectChapters);
-    }
-  };
-
   const progressValue = (3510 / 4000) * 100;
   return (
     <div className="space-y-6">
@@ -146,14 +118,8 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              <div className="md:col-span-3">
-                 <SelectGrade onGradeChange={handleGradeChange} />
-              </div>
-              <div className="md:col-span-3">
-                 <ChapterSelection chapters={chapters} disabled={!selectedGrade || !selectedSubject} />
-              </div>
               {subjects.map((subject) => (
-                <Link href={subject.href} key={subject.name} onClick={() => handleSubjectClick(subject.name)}>
+                <Link href={subject.href} key={subject.name}>
                   <div className="group flex flex-col items-center justify-center space-y-3 rounded-lg border bg-card p-6 text-center transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary">
                     <div className="rounded-full bg-background p-4 border">
                       <subject.icon

@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import type { Chapter } from "@/lib/curriculum-data";
 
-export function ChapterSelection({ chapters, disabled }: { chapters: Chapter[], disabled: boolean }) {
+export function ChapterSelection({ chapters, disabled, onChapterChange }: { chapters: Chapter[], disabled: boolean, onChapterChange: (chapterId: string) => void }) {
   return (
-    <Select disabled={disabled}>
+    <Select disabled={disabled} onValueChange={onChapterChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a chapter" />
       </SelectTrigger>
@@ -27,7 +27,7 @@ export function ChapterSelection({ chapters, disabled }: { chapters: Chapter[], 
             ))
           ) : (
             <SelectItem value="no-chapters" disabled>
-              Select a grade and subject first
+              Select a grade first
             </SelectItem>
           )}
         </SelectGroup>
