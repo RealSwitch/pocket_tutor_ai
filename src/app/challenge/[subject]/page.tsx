@@ -57,7 +57,18 @@ export default function SubjectChallengePage() {
     setSelectedChapter(null);
   }
 
-  if (challenge || isInitialLoading) {
+  if (isInitialLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+         <div className="flex flex-col items-center justify-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Generating your first challenge...</p>
+         </div>
+      </div>
+    );
+  }
+
+  if (challenge) {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
              <div className="mb-4 absolute top-6 left-6 z-10">
@@ -67,9 +78,9 @@ export default function SubjectChallengePage() {
                 </Button>
             </div>
             <ChallengeView 
-                initialChallenge={challenge!} 
+                initialChallenge={challenge} 
                 subject={subject} 
-                isLoadingChallenge={isLoading || isInitialLoading}
+                isLoadingChallenge={isLoading}
                 onNewChallenge={handleNewChallenge}
             />
         </div>
