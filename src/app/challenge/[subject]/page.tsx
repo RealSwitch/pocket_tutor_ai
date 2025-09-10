@@ -21,8 +21,6 @@ export default function SubjectChallengePage() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [challenge, setChallenge] = useState<PersonalizedChallengeOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
-
 
   useEffect(() => {
     if (selectedGrade) {
@@ -39,10 +37,11 @@ export default function SubjectChallengePage() {
 
   const handleStartChallenge = async () => {
     if (!selectedChapter) return;
-    setIsInitialLoading(true);
+    setIsLoading(true);
+    setChallenge(null); // Ensure ChallengeView enters loading state
     const newChallenge = await createChallenge(subject);
     setChallenge(newChallenge);
-    setIsInitialLoading(false);
+    setIsLoading(false);
   };
   
   const handleNewChallenge = async (forceEasy = false) => {
@@ -58,7 +57,7 @@ export default function SubjectChallengePage() {
     setSelectedChapter(null);
   }
 
-  if (challenge) {
+  if (challenge || isLoading) {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
              <div className="mb-4 absolute top-6 left-6 z-10">
@@ -68,7 +67,7 @@ export default function SubjectChallengePage() {
                 </Button>
             </div>
             <ChallengeView 
-                initialChallenge={challenge} 
+                initialChallenge={challenge!} 
                 subject={subject} 
                 isLoadingChallenge={isLoading}
                 onNewChallenge={handleNewChallenge}
@@ -76,6 +75,7 @@ export default function SubjectChallengePage() {
         </div>
     );
   }
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -106,10 +106,10 @@ export default function SubjectChallengePage() {
         </div>
         <Button
           onClick={handleStartChallenge}
-          disabled={!selectedChapter || isInitialLoading}
+          disabled={!selectedChapter || isLoading}
           size="lg"
         >
-          {isInitialLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Start Challenge
         </Button>
       </div>
