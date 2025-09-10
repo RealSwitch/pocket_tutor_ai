@@ -5,6 +5,7 @@ import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challe
 import type { EvaluateAnswerOutput } from "@/ai/flows/evaluate-answer-flow";
 import { createChallenge, evaluateStudentAnswer } from "../actions";
 import { generateMathTheme } from "@/ai/flows/math-theme-generation";
+import { generateScienceTheme } from "@/ai/flows/science-theme-generation";
 import {
   Card,
   CardContent,
@@ -47,14 +48,23 @@ export function ChallengeView({
   const progress = (correctStreak / 10) * 100;
 
   const fetchBackground = async (topic: string) => {
-    if (subject.toLowerCase() === "mathematics") {
-      try {
-        const theme = await generateMathTheme({ topic });
+    const lowerCaseSubject = subject.toLowerCase();
+    try {
+      let theme = null;
+      if (lowerCaseSubject === "mathematics") {
+        theme = await generateMathTheme({ topic });
+      } else if (lowerCaseSubject === "physical science") {
+        theme = await generateScienceTheme({ topic });
+      }
+      
+      if (theme) {
         setBackgroundSvg(theme.svgBackground);
-      } catch (error) {
-        console.error("Error generating math theme:", error);
+      } else {
         setBackgroundSvg(null);
       }
+    } catch (error) {
+      console.error(`Error generating ${subject} theme:`, error);
+      setBackgroundSvg(null);
     }
   };
 
