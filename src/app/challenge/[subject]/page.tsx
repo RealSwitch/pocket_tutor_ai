@@ -42,6 +42,13 @@ export default function SubjectChallengePage() {
     setInitialChallenge(challenge);
     setIsLoading(false);
   };
+  
+  const handleNewChallenge = async (forceEasy = false) => {
+    setIsLoading(true);
+    const newChallenge = await createChallenge(subject, forceEasy ? 'easy' : undefined);
+    setInitialChallenge(newChallenge);
+    setIsLoading(false);
+  };
 
   if (initialChallenge) {
     return (
@@ -52,7 +59,12 @@ export default function SubjectChallengePage() {
                     <span>Change Chapter</span>
                 </Button>
             </div>
-            <ChallengeView initialChallenge={initialChallenge} subject={subject} />
+            <ChallengeView 
+                initialChallenge={initialChallenge} 
+                subject={subject} 
+                isLoadingChallenge={isLoading}
+                onNewChallenge={handleNewChallenge}
+            />
         </div>
     );
   }

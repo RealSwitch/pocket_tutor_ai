@@ -65,6 +65,11 @@ export const curriculumData: Curriculum = {
       { id: 'm11-c4', title: 'Chapter 4: Analytical geometry' },
       { id: 'm11-c5', title: 'Chapter 5: Functions' },
     ],
+    'Physical Science': [
+        { id: 'ps11-c1', title: 'Chapter 1: Newton\'s Laws' },
+        { id: 'ps11-c2', title: 'Chapter 2: Ideal Gases' },
+        { id: 'ps11-c3', title: 'Chapter 3: Chemical Bonding' },
+    ],
   },
   12: {
     Mathematics: [
@@ -73,6 +78,12 @@ export const curriculumData: Curriculum = {
         { id: 'm12-c3', title: 'Chapter 3: Calculus' },
         { id: 'm12-c4', title: 'Chapter 4: Financial mathematics' },
         { id: 'm12-c5', title: 'Chapter 5: Probability' },
+    ],
+    'Physical Science': [
+        { id: 'ps12-c1', title: 'Chapter 1: Momentum and Impulse' },
+        { id: 'ps12-c2', title: 'Chapter 2: Vertical Projectile Motion' },
+        { id: 'ps12-c3', title: 'Chapter 3: Organic Molecules' },
+        { id: 'ps12-c4', title: 'Chapter 4: Electrochemistry' },
     ],
   },
 };

@@ -25,15 +25,64 @@ import { useToast } from "@/hooks/use-toast";
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 
+function ChallengeSkeleton() {
+    return (
+        <Card className="w-full max-w-2xl shadow-2xl">
+            <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <Skeleton className="h-8 w-48 mb-2" />
+                        <Skeleton className="h-4 w-32" />
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                        <Skeleton className="h-8 w-24 rounded-full" />
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-1">
+                    <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-12" />
+                    </div>
+                    <Skeleton className="h-2 w-full" />
+                </div>
+                <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </div>
+                </div>
+                <div className="space-y-4">
+                     <Skeleton className="h-24 w-full" />
+                </div>
+            </CardContent>
+            <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="flex gap-2">
+                    <Skeleton className="h-10 w-36" />
+                    <Skeleton className="h-10 w-28" />
+                </div>
+                <Skeleton className="h-10 w-40" />
+            </CardFooter>
+        </Card>
+    )
+}
+
+
 export function ChallengeView({
   initialChallenge,
   subject,
+  isLoadingChallenge,
+  onNewChallenge,
 }: {
   initialChallenge: PersonalizedChallengeOutput;
   subject: string;
+  isLoadingChallenge: boolean;
+  onNewChallenge: (forceEasy?: boolean) => void;
 }) {
   const [challenge, setChallenge] = useState(initialChallenge);
-  const [isLoading, setIsLoading] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [backgroundSvg, setBackgroundSvg] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
@@ -71,20 +120,16 @@ export function ChallengeView({
   };
 
   useEffect(() => {
-    fetchBackground(challenge.topic);
-  }, [challenge.topic, subject]);
+    if (initialChallenge) {
+      setChallenge(initialChallenge);
+      fetchBackground(initialChallenge.topic);
+      setAnswer("");
+      setEvaluationResult(null);
+      setShowSolution(false);
+      setAttempts(0);
+    }
+  }, [initialChallenge, subject]);
 
-  const handleNewChallenge = async (forceEasy = false) => {
-    setIsLoading(true);
-    setBackgroundSvg(null);
-    setAnswer("");
-    setEvaluationResult(null);
-    setShowSolution(false);
-    setAttempts(0);
-    const newChallenge = await createChallenge(subject, forceEasy ? 'easy' : undefined);
-    setChallenge(newChallenge);
-    setIsLoading(false);
-  };
 
   const handleShowSolution = () => {
     if (!showSolution) {
@@ -197,126 +242,108 @@ export function ChallengeView({
       className="flex-1 flex items-center justify-center p-4 transition-all duration-1000"
       style={backgroundStyle}
     >
-      <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500 bg-card/80 backdrop-blur-sm">
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <Zap className="text-primary" />
-                {subject} Challenge
-              </CardTitle>
-              <CardDescription>
-                {isLoading ? (
-                  <Skeleton className="h-4 w-48 mt-1" />
-                ) : (
-                  challenge.topic
-                )}
-              </CardDescription>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-                 <Badge
-                    variant="outline"
-                    className="text-lg font-bold font-mono flex items-center gap-2 border-amber-300 bg-amber-50 text-amber-800"
-                  >
-                    <Star className="text-amber-500" />
-                    {xp} XP
-                </Badge>
-                {isLoading ? (
-                  <Skeleton className="h-6 w-20 rounded-full" />
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className={`text-sm ${getDifficultyColor(
-                      challenge.difficultyLevel
-                    )}`}
-                  >
-                    {challenge.difficultyLevel}
-                  </Badge>
-                )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-1">
-            <div className="flex justify-between text-sm font-medium text-muted-foreground">
-              <span>10-Question Streak</span>
-              <span>{correctStreak} / 10</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-          <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-            ) : (
-              <>
-                <p className="font-semibold text-card-foreground leading-relaxed">
-                  <Latex>{challenge.problem}</Latex>
-                </p>
-                <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
-                  {challenge.subQuestions.map((sq, index) => (
-                    <li key={index}><Latex>{sq.question}</Latex></li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
+        {isLoadingChallenge ? <ChallengeSkeleton /> : (
+            <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500 bg-card/80 backdrop-blur-sm">
+                <CardHeader>
+                <div className="flex justify-between items-start">
+                    <div>
+                    <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                        <Zap className="text-primary" />
+                        {subject} Challenge
+                    </CardTitle>
+                    <CardDescription>
+                        {challenge.topic}
+                    </CardDescription>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                        <Badge
+                            variant="outline"
+                            className="text-lg font-bold font-mono flex items-center gap-2 border-amber-300 bg-amber-50 text-amber-800"
+                        >
+                            <Star className="text-amber-500" />
+                            {xp} XP
+                        </Badge>
+                        <Badge
+                            variant="outline"
+                            className={`text-sm ${getDifficultyColor(
+                            challenge.difficultyLevel
+                            )}`}
+                        >
+                            {challenge.difficultyLevel}
+                        </Badge>
+                    </div>
+                </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                <div className="space-y-1">
+                    <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                    <span>10-Question Streak</span>
+                    <span>{correctStreak} / 10</span>
+                    </div>
+                    <Progress value={progress} className="h-2" />
+                </div>
+                <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
+                    <>
+                        <p className="font-semibold text-card-foreground leading-relaxed">
+                        <Latex>{challenge.problem}</Latex>
+                        </p>
+                        <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
+                        {challenge.subQuestions.map((sq, index) => (
+                            <li key={index}><Latex>{sq.question}</Latex></li>
+                        ))}
+                        </ul>
+                    </>
+                </div>
 
-          <div className="space-y-4">
-            <Textarea
-              placeholder="Type your answer here..."
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              className="min-h-[100px] bg-background/70"
-              disabled={isEvaluating || isLoading || evaluationResult?.isCorrect}
-            />
-            {evaluationResult && (
-              <Alert className={getFeedbackColor()}>
-                <Sparkles className="h-4 w-4" />
-                <AlertTitle>Feedback</AlertTitle>
-                <AlertDescription>{evaluationResult.feedback}</AlertDescription>
-              </Alert>
-            )}
-            {showSolution && (
-              <Alert variant="default" className="bg-muted/50">
-                <Lightbulb className="h-4 w-4" />
-                <AlertTitle>Solution</AlertTitle>
-                <AlertDescription className="whitespace-pre-wrap"><Latex>{challenge.solution}</Latex></AlertDescription>
-              </Alert>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleShowSolution} disabled={isLoading}>
-              <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Hide" : "Show"} Solution
-            </Button>
-            <Button
-              className="bg-green-600 hover:bg-green-700"
-              disabled={isLoading || isEvaluating || !answer.trim() || evaluationResult?.isCorrect}
-              onClick={handleSubmitAnswer}
-            >
-              {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-              Submit
-            </Button>
-          </div>
-          <Button
-            variant="secondary"
-            onClick={() => handleNewChallenge(xp === 0)}
-            disabled={isLoading || !evaluationResult?.isCorrect}
-          >
-            {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            New Challenge
-          </Button>
-        </CardFooter>
-      </Card>
+                <div className="space-y-4">
+                    <Textarea
+                    placeholder="Type your answer here..."
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                    className="min-h-[100px] bg-background/70"
+                    disabled={isEvaluating || evaluationResult?.isCorrect}
+                    />
+                    {evaluationResult && (
+                    <Alert className={getFeedbackColor()}>
+                        <Sparkles className="h-4 w-4" />
+                        <AlertTitle>Feedback</AlertTitle>
+                        <AlertDescription>{evaluationResult.feedback}</AlertDescription>
+                    </Alert>
+                    )}
+                    {showSolution && (
+                    <Alert variant="default" className="bg-muted/50">
+                        <Lightbulb className="h-4 w-4" />
+                        <AlertTitle>Solution</AlertTitle>
+                        <AlertDescription className="whitespace-pre-wrap"><Latex>{challenge.solution}</Latex></AlertDescription>
+                    </Alert>
+                    )}
+                </div>
+                </CardContent>
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleShowSolution}>
+                    <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Hide" : "Show"} Solution
+                    </Button>
+                    <Button
+                    className="bg-green-600 hover:bg-green-700"
+                    disabled={isEvaluating || !answer.trim() || evaluationResult?.isCorrect}
+                    onClick={handleSubmitAnswer}
+                    >
+                    {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                    Submit
+                    </Button>
+                </div>
+                <Button
+                    variant="secondary"
+                    onClick={() => onNewChallenge(xp === 0)}
+                    disabled={!evaluationResult?.isCorrect}
+                >
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    New Challenge
+                </Button>
+                </CardFooter>
+            </Card>
+        )}
     </div>
   );
 }
