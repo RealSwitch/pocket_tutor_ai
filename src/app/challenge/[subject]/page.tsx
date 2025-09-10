@@ -15,7 +15,7 @@ import { curriculumData, type Subject as CurriculumSubject, type Chapter } from 
 
 export default function SubjectChallengePage() {
   const params = useParams<{ subject: string }>();
-  const subject = useMemo(() => decodeURIComponent(params.subject) as CurriculumSubject, [params.subject]);
+  const subject = useMemo(() => decodeURIComponent(params.subject as string) as CurriculumSubject, [params.subject]);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);

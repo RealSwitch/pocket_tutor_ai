@@ -15,6 +15,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
+  
+  // This matches all routes inside the (app) group
   const isProtectedPage = !isAuthPage;
 
   if (isProtectedPage && !isLoggedIn) {
