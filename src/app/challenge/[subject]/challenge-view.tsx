@@ -17,9 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles } from "lucide-react";
+import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 export function ChallengeView({
   initialChallenge,
@@ -31,19 +32,26 @@ export function ChallengeView({
   const [challenge, setChallenge] = useState(initialChallenge);
   const [isLoading, setIsLoading] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [progress, setProgress] = useState(30);
   const [backgroundSvg, setBackgroundSvg] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
   const [evaluationResult, setEvaluationResult] = useState<EvaluateAnswerOutput | null>(null);
   const [showSolution, setShowSolution] = useState(false);
+  const { toast } = useToast();
+
+  // Gamification State
+  const [xp, setXp] = useState(100); // Starting XP
+  const [correctStreak, setCorrectStreak] = useState(0);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+
+  const progress = (correctStreak / 10) * 100;
 
   const fetchBackground = async (topic: string) => {
     if (subject.toLowerCase() === "mathematics") {
       try {
         const theme = await generateMathTheme({ topic });
         setBackgroundSvg(theme.svgBackground);
-      } catch (error)
-      {
+      } catch (error) {
         console.error("Error generating math theme:", error);
         setBackgroundSvg(null);
       }
@@ -54,22 +62,38 @@ export function ChallengeView({
     fetchBackground(challenge.topic);
   }, [challenge.topic, subject]);
 
-  const handleNewChallenge = async () => {
+  const handleNewChallenge = async (forceEasy = false) => {
     setIsLoading(true);
     setBackgroundSvg(null);
     setAnswer("");
     setEvaluationResult(null);
     setShowSolution(false);
-    const newChallenge = await createChallenge(subject);
+    setAttempts(0);
+    const newChallenge = await createChallenge(subject, forceEasy ? 'easy' : undefined);
     setChallenge(newChallenge);
-    setProgress(Math.floor(Math.random() * 50) + 20); // Randomize progress
     setIsLoading(false);
   };
+
+  const handleShowSolution = () => {
+    if (!showSolution) {
+        const pointsToSubtract = 20;
+        setXp(prev => Math.max(0, prev - pointsToSubtract));
+        toast({
+            title: "Solution Revealed",
+            description: `You lost ${pointsToSubtract} XP.`,
+            variant: "destructive"
+        });
+    }
+    setShowSolution(!showSolution);
+  }
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) return;
     setIsEvaluating(true);
     setEvaluationResult(null);
+    
+    setAttempts(prev => prev + 1);
+
     const fullProblem = `${challenge.problem}\n\n${challenge.subQuestions.map(q => q.question).join('\n')}`;
     const result = await evaluateStudentAnswer({
       problem: fullProblem,
@@ -77,8 +101,54 @@ export function ChallengeView({
       studentAnswer: answer,
     });
     setEvaluationResult(result);
-    if(result.isCorrect) {
-      setProgress(prev => Math.min(100, prev + 25));
+
+    if (result.isCorrect) {
+      // First attempt correct
+      if (attempts === 0) {
+        const newStreak = correctStreak + 1;
+        setCorrectStreak(newStreak);
+        
+        if (newStreak === 10) {
+            const bonusXp = 50;
+            setXp(prev => prev + bonusXp);
+            toast({
+                title: "Amazing!",
+                description: `10 in a row! You earned a ${bonusXp} XP bonus!`,
+            });
+            setCorrectStreak(0); // Reset streak after bonus
+        } else {
+             toast({
+                title: "Correct!",
+                description: `You are on a ${newStreak} question streak!`,
+             });
+        }
+      } else {
+        // Correct, but not on the first try. No streak bonus, but no penalty.
+         toast({
+            title: "Finally Correct!",
+            description: "Good job working through it.",
+         });
+      }
+      setQuestionsAnswered(prev => prev + 1);
+    } else {
+      // Incorrect answer
+      const pointsToSubtract = 10;
+      const newXp = Math.max(0, xp - pointsToSubtract);
+      setXp(newXp);
+      setCorrectStreak(0); // Reset streak on fail
+      toast({
+        title: "Not quite...",
+        description: `You lost ${pointsToSubtract} XP. Try again or check the solution.`,
+        variant: "destructive"
+      });
+
+      if (newXp === 0) {
+        toast({
+            title: "XP Depleted!",
+            description: "You'll now only receive easy questions to build your XP back up.",
+        });
+        // The next challenge will be forced to be easy
+      }
     }
     setIsEvaluating(false);
   };
@@ -95,12 +165,11 @@ export function ChallengeView({
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
-  
-    const getFeedbackColor = () => {
+
+  const getFeedbackColor = () => {
     if (!evaluationResult) return "";
     return evaluationResult.isCorrect ? "border-green-500 bg-green-50" : "border-amber-500 bg-amber-50";
   };
-
 
   const backgroundStyle: React.CSSProperties = backgroundSvg
     ? {
@@ -132,25 +201,34 @@ export function ChallengeView({
                 )}
               </CardDescription>
             </div>
-            {isLoading ? (
-              <Skeleton className="h-6 w-20 rounded-full" />
-            ) : (
-              <Badge
-                variant="outline"
-                className={`text-sm ${getDifficultyColor(
-                  challenge.difficultyLevel
-                )}`}
-              >
-                {challenge.difficultyLevel}
-              </Badge>
-            )}
+            <div className="flex flex-col items-end gap-2">
+                 <Badge
+                    variant="outline"
+                    className="text-lg font-bold font-mono flex items-center gap-2 border-amber-300 bg-amber-50 text-amber-800"
+                  >
+                    <Star className="text-amber-500" />
+                    {xp} XP
+                </Badge>
+                {isLoading ? (
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                ) : (
+                  <Badge
+                    variant="outline"
+                    className={`text-sm ${getDifficultyColor(
+                      challenge.difficultyLevel
+                    )}`}
+                  >
+                    {challenge.difficultyLevel}
+                  </Badge>
+                )}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-1">
             <div className="flex justify-between text-sm font-medium text-muted-foreground">
-              <span>Progress</span>
-              <span>{progress}%</span>
+              <span>10-Question Streak</span>
+              <span>{correctStreak} / 10</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -176,47 +254,47 @@ export function ChallengeView({
           </div>
 
           <div className="space-y-4">
-             <Textarea
-                placeholder="Type your answer here..."
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                className="min-h-[100px] bg-background/70"
-                disabled={isEvaluating || isLoading}
-             />
-             {evaluationResult && (
-                 <Alert className={getFeedbackColor()}>
-                   <Sparkles className="h-4 w-4" />
-                   <AlertTitle>Feedback</AlertTitle>
-                   <AlertDescription>{evaluationResult.feedback}</AlertDescription>
-                 </Alert>
-             )}
+            <Textarea
+              placeholder="Type your answer here..."
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              className="min-h-[100px] bg-background/70"
+              disabled={isEvaluating || isLoading || evaluationResult?.isCorrect}
+            />
+            {evaluationResult && (
+              <Alert className={getFeedbackColor()}>
+                <Sparkles className="h-4 w-4" />
+                <AlertTitle>Feedback</AlertTitle>
+                <AlertDescription>{evaluationResult.feedback}</AlertDescription>
+              </Alert>
+            )}
             {showSolution && (
-                 <Alert variant="default" className="bg-muted/50">
-                   <Lightbulb className="h-4 w-4" />
-                   <AlertTitle>Solution</AlertTitle>
-                   <AlertDescription className="whitespace-pre-wrap">{challenge.solution}</AlertDescription>
-                 </Alert>
+              <Alert variant="default" className="bg-muted/50">
+                <Lightbulb className="h-4 w-4" />
+                <AlertTitle>Solution</AlertTitle>
+                <AlertDescription className="whitespace-pre-wrap">{challenge.solution}</AlertDescription>
+              </Alert>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowSolution(!showSolution)} disabled={isLoading}>
+            <Button variant="outline" onClick={handleShowSolution} disabled={isLoading}>
               <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Hide" : "Show"} Solution
             </Button>
             <Button
               className="bg-green-600 hover:bg-green-700"
-              disabled={isLoading || isEvaluating || !answer.trim()}
+              disabled={isLoading || isEvaluating || !answer.trim() || evaluationResult?.isCorrect}
               onClick={handleSubmitAnswer}
             >
               {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-               Submit
+              Submit
             </Button>
           </div>
           <Button
             variant="secondary"
-            onClick={handleNewChallenge}
-            disabled={isLoading}
+            onClick={() => handleNewChallenge(xp === 0)}
+            disabled={isLoading || !evaluationResult?.isCorrect}
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

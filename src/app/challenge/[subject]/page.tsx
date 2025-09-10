@@ -10,10 +10,11 @@ export default async function ChallengePage({
   params: { subject: string };
 }) {
   const subject = decodeURIComponent(params.subject);
+  // Initial challenge can be of any difficulty, subsequent ones will be based on XP.
   const initialChallenge = await createChallenge(subject);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-screen overflow-hidden">
       <div className="mb-4 absolute top-6 left-6 z-10">
         <Button asChild variant="outline" size="sm">
           <Link href="/" className="flex items-center gap-2">

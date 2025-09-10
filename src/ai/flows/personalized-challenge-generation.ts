@@ -16,6 +16,7 @@ const PersonalizedChallengeInputSchema = z.object({
   subject: z.string().describe('The subject for which the challenge is generated (e.g., Mathematics, Accounting).'),
   gradeLevel: z.number().describe('The grade level of the student.'),
   learningHistory: z.string().optional().describe('A summary of the student\'s learning history and performance in the subject.'),
+  difficultyLevelOverride: z.string().optional().describe('An optional override for the difficulty level (e.g., "easy", "medium", "hard").'),
 });
 export type PersonalizedChallengeInput = z.infer<typeof PersonalizedChallengeInputSchema>;
 
@@ -42,6 +43,10 @@ const personalizedChallengePrompt = ai.definePrompt({
   prompt: `You are an AI-powered learning assistant that generates personalized challenges for students. Your goal is to create questions that are engaging, educational, and tailored to the student's needs, inspired by the Siyavula curriculum style which is clear, structured, and builds on core concepts.
 
   Based on the student's learning history, subject, and grade level, create a unique and randomized challenge.
+  
+  {{#if difficultyLevelOverride}}
+  IMPORTANT: The difficulty level for this challenge MUST be '{{difficultyLevelOverride}}'.
+  {{/if}}
 
   Student ID: {{{studentId}}}
   Subject: {{{subject}}}

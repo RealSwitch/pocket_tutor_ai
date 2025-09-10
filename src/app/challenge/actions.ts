@@ -13,7 +13,8 @@ import {
 
 
 export async function createChallenge(
-  subject: string
+  subject: string,
+  difficulty?: 'easy' | 'medium' | 'hard'
 ): Promise<PersonalizedChallengeOutput> {
   const input: PersonalizedChallengeInput = {
     studentId: "student-123",
@@ -21,6 +22,7 @@ export async function createChallenge(
     gradeLevel: 8,
     learningHistory:
       "The student shows strong performance in geometric concepts but struggles with algebraic equations and fractions. They respond well to visual and interactive learning methods.",
+    difficultyLevelOverride: difficulty,
   };
 
   try {
