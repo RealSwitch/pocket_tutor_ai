@@ -40,7 +40,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
 import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
-import { redirect } from "next/navigation";
 
 
 const navItems = [
@@ -54,15 +53,8 @@ const unprotectedRoutes = ['/login', '/signup'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
   
-  React.useEffect(() => {
-    if (!loading && !user && !unprotectedRoutes.includes(pathname)) {
-        redirect('/login');
-    }
-  }, [pathname, user, loading]);
-
-
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
   }
