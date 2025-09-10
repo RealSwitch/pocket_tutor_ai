@@ -44,6 +44,7 @@ export function LoginForm() {
         description: result.error,
       });
     }
+    // The redirect is handled by the server action.
   }
 
   return (
