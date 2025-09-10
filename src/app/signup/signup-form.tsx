@@ -18,7 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { signUpWithEmail } from '../auth/actions';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
@@ -31,7 +30,6 @@ const formSchema = z.object({
 export function SignUpForm() {
   const { toast } = useToast();
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,10 +38,10 @@ export function SignUpForm() {
     },
   });
 
+  const { isSubmitting } = form.formState;
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
     const result = await signUpWithEmail(values);
-    setIsSubmitting(false);
 
     if (result?.error) {
       toast({
