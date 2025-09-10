@@ -21,6 +21,7 @@ export default function SubjectChallengePage() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [challenge, setChallenge] = useState<PersonalizedChallengeOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
 
   useEffect(() => {
     if (selectedGrade) {
@@ -37,11 +38,10 @@ export default function SubjectChallengePage() {
 
   const handleStartChallenge = async () => {
     if (!selectedChapter) return;
-    setIsLoading(true);
-    setChallenge(null); // Ensure ChallengeView enters loading state
+    setIsInitialLoading(true);
     const newChallenge = await createChallenge(subject);
     setChallenge(newChallenge);
-    setIsLoading(false);
+    setIsInitialLoading(false);
   };
   
   const handleNewChallenge = async (forceEasy = false) => {
@@ -57,7 +57,7 @@ export default function SubjectChallengePage() {
     setSelectedChapter(null);
   }
 
-  if (challenge || isLoading) {
+  if (challenge || isInitialLoading) {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
              <div className="mb-4 absolute top-6 left-6 z-10">
@@ -69,7 +69,7 @@ export default function SubjectChallengePage() {
             <ChallengeView 
                 initialChallenge={challenge!} 
                 subject={subject} 
-                isLoadingChallenge={isLoading}
+                isLoadingChallenge={isLoading || isInitialLoading}
                 onNewChallenge={handleNewChallenge}
             />
         </div>
@@ -106,10 +106,10 @@ export default function SubjectChallengePage() {
         </div>
         <Button
           onClick={handleStartChallenge}
-          disabled={!selectedChapter || isLoading}
+          disabled={!selectedChapter || isInitialLoading}
           size="lg"
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isInitialLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Start Challenge
         </Button>
       </div>
