@@ -28,6 +28,7 @@ export async function signInWithEmail(values: z.infer<typeof emailSchema>): Prom
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
+    // The form on the client will now handle setting the cookie.
     return { success: true, session: sessionData };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-in.' };
@@ -38,6 +39,7 @@ export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Prom
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
+     // The form on the client will now handle setting the cookie.
     return { success: true, session: sessionData };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-up.' };

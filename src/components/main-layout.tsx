@@ -63,9 +63,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     return <main className="flex-1">{children}</main>;
   }
 
+  // AuthProvider is now responsible for redirecting and showing a loader.
+  // We can render the layout skeleton while it decides.
   if (!user) {
-    // AuthProvider is responsible for redirecting and showing a loader,
-    // so we can just return null here to avoid a flash of unauthenticated content.
     return null;
   }
 
@@ -145,6 +145,7 @@ function UserMenu() {
         await signOut();
         Cookies.remove('session');
         router.push('/login');
+        router.refresh();
     }
 
   return (

@@ -50,6 +50,7 @@ export function SignUpForm() {
     } else if (result.success) {
       Cookies.set('session', JSON.stringify(result.session), { expires: 5 });
       router.push('/');
+      router.refresh(); // Ensures the layout re-renders with the new auth state
     }
   }
 
