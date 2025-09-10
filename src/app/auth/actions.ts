@@ -24,7 +24,7 @@ function createMockSessionData(email: string): SessionData {
     };
 }
 
-export async function signInWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true } | { error: string }> {
+export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
@@ -32,13 +32,13 @@ export async function signInWithEmail(values: z.infer<typeof emailSchema>): Prom
         path: '/',
         maxAge: 60 * 60 * 24 * 5, // 5 days
     });
-    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-in.' };
   }
+  redirect('/');
 }
 
-export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true } | { error: string }> {
+export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
   try {
     const validatedValues = emailSchema.parse(values);
     const sessionData = createMockSessionData(validatedValues.email);
@@ -46,10 +46,10 @@ export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Prom
         path: '/',
         maxAge: 60 * 60 * 24 * 5, // 5 days
     });
-    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-up.' };
   }
+  redirect('/');
 }
 
 export async function signOut() {

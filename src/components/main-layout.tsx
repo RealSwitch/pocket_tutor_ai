@@ -7,9 +7,6 @@ import {
   User,
   PanelLeft,
   Search,
-  Settings,
-  LogOut,
-  ChevronDown,
   School,
 } from "lucide-react";
 import type { User as AuthUser } from "@/app/auth/auth-context";
@@ -26,19 +23,9 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
-import { signOut } from "@/app/auth/actions";
 import { headers } from "next/headers";
+import { UserMenu } from "./user-menu";
 
 
 const navItems = [
@@ -50,23 +37,9 @@ const navItems = [
 ];
 
 
-export function MainLayout({ children }: { children: React.ReactNode }) {
-  const user = getSession();
+export function MainLayout({ children, user }: { children: React.ReactNode, user: AuthUser }) {
   const headersList = headers();
   const pathname = headersList.get('x-pathname') || '/';
-
-  // If we are on an auth page, just render the children.
-  if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {
-    return <main className="flex-1">{children}</main>;
-  }
-
-  // Since middleware protects all other pages, we can assume user is not null.
-  // We add this check for type safety and as a fallback.
-  if (!user) {
-    // This case should ideally not be reached due to middleware.
-    // You could render a loading state or a fallback UI.
-    return null;
-  }
 
   return (
     <SidebarProvider>
@@ -132,48 +105,5 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
-  );
-}
-
-// UserMenu needs to be a client component because it uses hooks for actions.
-function UserMenu({ user }: { user: AuthUser }) {
-    
-    const handleSignOut = async () => {
-        await signOut();
-    }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative flex items-center gap-2 p-1 h-10 rounded-full"
-        >
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.picture} alt={user?.email || 'User'} data-ai-hint="person photo" />
-            <AvatarFallback>{user?.email?.[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <span className="hidden sm:inline-block text-sm">{user?.email}</span>
-          <ChevronDown className="h-4 w-4 hidden sm:inline-block text-muted-foreground"/>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="mr-2" />
-          <span>Profile</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="mr-2" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut className="mr-2" />
-          <span>Log out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }

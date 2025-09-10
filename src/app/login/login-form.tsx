@@ -38,15 +38,12 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const result = await signInWithEmail(values);
-    if (result.error) {
+    if (result?.error) {
       toast({
         variant: 'destructive',
         title: 'Authentication Error',
         description: result.error,
       });
-    } else if (result.success) {
-      // Force a full page reload to ensure the new cookie is read
-      window.location.href = '/';
     }
   }
 
