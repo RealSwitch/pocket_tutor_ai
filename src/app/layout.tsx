@@ -29,7 +29,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <AuthProvider user={null}>
+        <AuthProvider>
           <MainLayout>{children}</MainLayout>
         </AuthProvider>
         <Toaster />

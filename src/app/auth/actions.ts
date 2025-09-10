@@ -10,9 +10,11 @@ const emailSchema = z.object({
 });
 
 async function createMockSession(email: string) {
+    const role = email.includes('teacher') ? 'teacher' : 'learner';
     const sessionData = {
         email: email,
         isLoggedIn: true,
+        role: role,
     };
     const sessionCookie = JSON.stringify(sessionData);
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days

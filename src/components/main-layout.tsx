@@ -76,7 +76,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     return <main className="flex-1">{children}</main>;
   }
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
