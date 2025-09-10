@@ -50,11 +50,17 @@ export default function SubjectChallengePage() {
     setIsLoading(false);
   };
 
+  const resetChallenge = () => {
+    setInitialChallenge(null);
+    setSelectedGrade(null);
+    setSelectedChapter(null);
+  }
+
   if (initialChallenge) {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
              <div className="mb-4 absolute top-6 left-6 z-10">
-                <Button onClick={() => setInitialChallenge(null)} variant="outline" size="sm" className="flex items-center gap-2">
+                <Button onClick={resetChallenge} variant="outline" size="sm" className="flex items-center gap-2">
                      <ChevronLeft className="h-4 w-4" />
                     <span>Change Chapter</span>
                 </Button>
