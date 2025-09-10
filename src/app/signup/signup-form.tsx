@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +19,7 @@ import { Loader2 } from 'lucide-react';
 import { signUpWithEmail } from '../auth/actions';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -39,13 +41,14 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const result = await signUpWithEmail(values);
-    if (result?.error) {
+    if ('error' in result) {
       toast({
         variant: 'destructive',
         title: 'Authentication Error',
         description: result.error,
       });
-    } else if (result?.success) {
+    } else if (result.success) {
+      Cookies.set('session', JSON.stringify(result.session), { expires: 5 });
       router.push('/');
     }
   }

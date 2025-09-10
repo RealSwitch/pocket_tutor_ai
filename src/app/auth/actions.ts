@@ -9,33 +9,36 @@ const emailSchema = z.object({
   password: z.string().min(6),
 });
 
-async function createMockSession(email: string) {
+type SessionData = {
+    email: string;
+    isLoggedIn: true;
+    role: 'learner' | 'teacher';
+};
+
+function createMockSessionData(email: string): SessionData {
     const role = email.includes('teacher') ? 'teacher' : 'learner';
-    const sessionData = {
+    return {
         email: email,
         isLoggedIn: true,
         role: role,
     };
-    const sessionCookie = JSON.stringify(sessionData);
-    const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-    cookies().set('session', sessionCookie, { maxAge: expiresIn, path: '/' });
 }
 
-export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
+export async function signInWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true; session: SessionData } | { error: string }> {
   try {
     const validatedValues = emailSchema.parse(values);
-    await createMockSession(validatedValues.email);
-    return { success: true };
+    const sessionData = createMockSessionData(validatedValues.email);
+    return { success: true, session: sessionData };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-in.' };
   }
 }
 
-export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
+export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Promise<{ success: true; session: SessionData } | { error: string }> {
   try {
     const validatedValues = emailSchema.parse(values);
-    await createMockSession(validatedValues.email);
-    return { success: true };
+    const sessionData = createMockSessionData(validatedValues.email);
+    return { success: true, session: sessionData };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-up.' };
   }

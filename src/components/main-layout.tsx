@@ -42,6 +42,7 @@ import { Input } from "./ui/input";
 import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
 import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
 
 
 const navItems = [
@@ -57,7 +58,6 @@ const unprotectedRoutes = ['/login', '/signup'];
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useAuth();
-  const router = useRouter();
   
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
@@ -143,6 +143,7 @@ function UserMenu() {
     
     const handleSignOut = async () => {
         await signOut();
+        Cookies.remove('session');
         router.push('/login');
     }
 
