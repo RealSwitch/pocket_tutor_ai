@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { mockClassrooms } from '@/lib/mock-data';
 import {
   Card,
@@ -42,11 +42,8 @@ import {
 import { Bar, BarChart as RechartsBarChart, CartesianGrid, XAxis } from "recharts"
 
 
-export default function StudentPage({
-  params,
-}: {
-  params: { id: string; studentId: string };
-}) {
+export default function StudentPage() {
+  const params = useParams<{ id: string; studentId: string }>();
   const classroom = mockClassrooms.find((c) => c.id === params.id);
   const student = classroom?.students.find((s) => s.id === params.studentId);
 
