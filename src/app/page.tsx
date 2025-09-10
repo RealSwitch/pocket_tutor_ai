@@ -29,6 +29,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { SelectGrade } from '@/components/select-grade';
+import { ChapterSelection } from '@/components/chapter-selection';
 
 type Subject = {
   name: string;
@@ -114,6 +116,12 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              <div className="md:col-span-3">
+                <SelectGrade />
+              </div>
+              <div className="md:col-span-3">
+                <ChapterSelection />
+              </div>
               {subjects.map((subject) => (
                 <Link href={subject.href} key={subject.name}>
                   <div className="group flex flex-col items-center justify-center space-y-3 rounded-lg border bg-card p-6 text-center transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary">
