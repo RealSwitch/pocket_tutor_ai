@@ -16,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { AddStudentDialog } from './add-student-dialog';
+import { Progress } from '@/components/ui/progress';
 
 
 export default function ClassroomPage({ params }: { params: { id: string } }) {
@@ -73,11 +74,16 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
                           <span className="font-medium">{student.name}</span>
                         </div>
                       </TableCell>
-                       <TableCell className="text-muted-foreground">
-                        N/A
+                       <TableCell>
+                         <div className="flex items-center gap-2">
+                            <Progress value={student.progress} className="w-24 h-2" />
+                            <span className="text-xs text-muted-foreground font-mono">{student.progress}%</span>
+                         </div>
                       </TableCell>
                        <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">View</Button>
+                        <Button asChild variant="ghost" size="sm">
+                            <Link href={`/teacher/classrooms/${classroom.id}/students/${student.id}`}>View</Link>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
