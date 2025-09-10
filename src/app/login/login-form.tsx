@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { signInWithEmail } from '../auth/actions';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -28,6 +29,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,6 +39,7 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     const result = await signInWithEmail(values);
     if (result?.error) {
       toast({
@@ -45,6 +48,7 @@ export function LoginForm() {
         description: result.error,
       });
     }
+    setIsSubmitting(false);
   }
 
   return (
@@ -89,9 +93,9 @@ export function LoginForm() {
           <Button
             type="submit"
             className="w-full"
-            disabled={form.formState.isSubmitting}
+            disabled={isSubmitting}
           >
-            {form.formState.isSubmitting && (
+            {isSubmitting && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             Sign in
