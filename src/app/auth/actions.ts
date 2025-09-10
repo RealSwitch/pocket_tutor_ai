@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 
@@ -18,30 +17,29 @@ async function createMockSession(email: string) {
     };
     const sessionCookie = JSON.stringify(sessionData);
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-    cookies().set('session', sessionCookie, { maxAge: expiresIn });
+    cookies().set('session', sessionCookie, { maxAge: expiresIn, path: '/' });
 }
 
 export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
   try {
     const validatedValues = emailSchema.parse(values);
     await createMockSession(validatedValues.email);
+    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-in.' };
   }
-  redirect('/');
 }
 
 export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
   try {
     const validatedValues = emailSchema.parse(values);
     await createMockSession(validatedValues.email);
+    return { success: true };
   } catch (error: any) {
     return { error: 'An unexpected error occurred during sign-up.' };
   }
-  redirect('/');
 }
 
 export async function signOut() {
     cookies().delete('session');
-    redirect('/login');
 }

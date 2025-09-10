@@ -154,9 +154,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
 function UserMenu() {
     const { user } = useAuth();
+    const router = useRouter();
     
     const handleSignOut = async () => {
         await signOut();
+        router.push('/login');
     }
 
   return (

@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { signUpWithEmail } from '../auth/actions';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -27,6 +28,7 @@ const formSchema = z.object({
 
 export function SignUpForm() {
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,12 +39,14 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const result = await signUpWithEmail(values);
-    if (result && result.error) {
+    if (result?.error) {
       toast({
         variant: 'destructive',
         title: 'Authentication Error',
         description: result.error,
       });
+    } else if (result?.success) {
+      router.push('/');
     }
   }
 
