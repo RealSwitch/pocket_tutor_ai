@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-const emailSchema = z.object({
+const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
@@ -24,9 +24,9 @@ function createMockSessionData(email: string): SessionData {
     };
 }
 
-export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
+export async function signInWithEmail(values: z.infer<typeof formSchema>) {
   // In a real app, you'd validate credentials against a database here.
-  const validated = emailSchema.safeParse(values);
+  const validated = formSchema.safeParse(values);
   if (!validated.success) {
     // This won't be shown to the user with this pattern,
     // but it's good practice for validation.
@@ -42,9 +42,9 @@ export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
   redirect('/');
 }
 
-export async function signUpWithEmail(values: z.infer<typeof emailSchema>) {
+export async function signUpWithEmail(values: z.infer<typeof formSchema>) {
    // In a real app, you'd create a new user in the database here.
-   const validated = emailSchema.safeParse(values);
+   const validated = formSchema.safeParse(values);
    if (!validated.success) {
      return { error: 'Invalid form data.' };
    }
