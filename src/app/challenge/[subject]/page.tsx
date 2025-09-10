@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectGrade } from "@/components/select-grade";
@@ -12,7 +13,8 @@ import { ChallengeView } from "./challenge-view";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
 import { curriculumData, type Subject as CurriculumSubject, type Chapter } from "@/lib/curriculum-data";
 
-export default function SubjectChallengePage({ params }: { params: { subject: string } }) {
+export default function SubjectChallengePage() {
+  const params = useParams<{ subject: string }>();
   const subject = useMemo(() => decodeURIComponent(params.subject) as CurriculumSubject, [params.subject]);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
