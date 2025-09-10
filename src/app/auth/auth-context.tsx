@@ -15,12 +15,10 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
-  loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: false, // Set loading to false by default
 });
 
 export const AuthProvider = ({
@@ -31,10 +29,9 @@ export const AuthProvider = ({
   user: User | null;
 }) => {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(false); // No longer true by default
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user }}>
       {children}
     </AuthContext.Provider>
   );
