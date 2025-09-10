@@ -13,6 +13,7 @@ import { PlusCircle, Users, BookOpen } from 'lucide-react';
 import { mockClassrooms } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { CreateClassroomDialog } from './create-classroom-dialog';
 
 export default function TeacherDashboard() {
   return (
@@ -26,10 +27,7 @@ export default function TeacherDashboard() {
             Manage your classrooms, modules, and students.
           </p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2" />
-          Create Classroom
-        </Button>
+        <CreateClassroomDialog />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
