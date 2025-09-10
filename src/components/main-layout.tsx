@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronDown,
   Loader2,
+  School,
 } from "lucide-react";
 
 import {
@@ -41,11 +42,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
 import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutGrid },
   { href: "/rewards", label: "Rewards", icon: Gift },
+  { href: "/teacher", label: "Teacher Dashboard", icon: School, role: "teacher" },
   { href: "#", label: "Leaderboards", icon: Trophy },
   { href: "#", label: "Profile", icon: User },
 ];
@@ -54,10 +58,32 @@ const unprotectedRoutes = ['/login', '/signup'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  
+  const { user } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // This effect handles redirection based on auth state.
+    // It's a client-side check. For robust protection, middleware is recommended.
+    if (!user && !unprotectedRoutes.includes(pathname)) {
+      router.push('/login');
+    } else {
+      setLoading(false);
+    }
+  }, [user, pathname, router]);
+
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
   }
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
 
   return (
     <SidebarProvider>
@@ -86,7 +112,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            {navItems.map((item) => (
+            {navItems.map((item) => {
+               if (item.role && item.role !== user?.role) {
+                return null;
+              }
+              return (
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
                   asChild
@@ -102,7 +132,8 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            ))}
+              )
+            })}
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
