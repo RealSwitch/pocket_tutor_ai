@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,7 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 
-function ChallengeSkeleton() {
+function ChallengeSkeleton({ progress }: { progress: number }) {
     return (
         <Card className="w-full max-w-2xl shadow-2xl">
             <CardHeader>
@@ -41,12 +42,9 @@ function ChallengeSkeleton() {
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-1">
-                    <div className="flex justify-between text-sm font-medium text-muted-foreground">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-4 w-12" />
-                    </div>
-                    <Skeleton className="h-2 w-full" />
+                 <div className="space-y-2">
+                    <p className="text-sm font-medium text-center text-muted-foreground">Generating your next challenge...</p>
+                    <Progress value={progress} className="w-full" />
                 </div>
                 <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
                     <div className="space-y-2">
@@ -89,6 +87,7 @@ export function ChallengeView({
   const [evaluationResult, setEvaluationResult] = useState<EvaluateAnswerOutput | null>(null);
   const [showSolution, setShowSolution] = useState(false);
   const { toast } = useToast();
+  const [progress, setProgress] = useState(0);
 
   // Gamification State
   const [xp, setXp] = useState(100); // Starting XP
@@ -96,7 +95,26 @@ export function ChallengeView({
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [attempts, setAttempts] = useState(0);
 
-  const progress = (correctStreak / 10) * 100;
+  const streakProgress = (correctStreak / 10) * 100;
+
+  useEffect(() => {
+    if (isLoadingChallenge) {
+      setProgress(0);
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(interval);
+            return 95;
+          }
+          return prev + 5;
+        });
+      }, 200);
+
+      return () => clearInterval(interval);
+    } else {
+        setProgress(100);
+    }
+  }, [isLoadingChallenge]);
 
   const fetchBackground = async (topic: string) => {
     const lowerCaseSubject = subject.toLowerCase();
@@ -242,7 +260,7 @@ export function ChallengeView({
       className="flex-1 flex items-center justify-center p-4 transition-all duration-1000"
       style={backgroundStyle}
     >
-        {isLoadingChallenge ? <ChallengeSkeleton /> : (
+        {isLoadingChallenge ? <ChallengeSkeleton progress={progress} /> : (
             <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500 bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                 <div className="flex justify-between items-start">
@@ -280,7 +298,7 @@ export function ChallengeView({
                     <span>10-Question Streak</span>
                     <span>{correctStreak} / 10</span>
                     </div>
-                    <Progress value={progress} className="h-2" />
+                    <Progress value={streakProgress} className="h-2" />
                 </div>
                 <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
                     <>
@@ -321,8 +339,8 @@ export function ChallengeView({
                 </CardContent>
                 <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={handleShowSolution}>
-                    <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Hide" : "Show"} Solution
+                    <Button variant="outline" onClick={handleShowSolution} disabled={showSolution}>
+                    <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Solution" : "Show Solution"}
                     </Button>
                     <Button
                     className="bg-green-600 hover:bg-green-700"
@@ -336,7 +354,7 @@ export function ChallengeView({
                 <Button
                     variant="secondary"
                     onClick={() => onNewChallenge(xp === 0)}
-                    disabled={!evaluationResult?.isCorrect && !showSolution}
+                    disabled={(!evaluationResult?.isCorrect && !showSolution) || isLoadingChallenge}
                 >
                     <RefreshCw className="mr-2 h-4 w-4" />
                     New Challenge
@@ -347,3 +365,5 @@ export function ChallengeView({
     </div>
   );
 }
+
+    
