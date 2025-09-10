@@ -3,6 +3,7 @@
 
 import { z } from 'zod';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 const emailSchema = z.object({
   email: z.string().email(),
@@ -54,4 +55,5 @@ export async function signUpWithEmail(values: z.infer<typeof emailSchema>): Prom
 
 export async function signOut() {
     cookies().delete('session');
+    redirect('/login');
 }

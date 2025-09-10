@@ -38,7 +38,7 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const result = await signInWithEmail(values);
-    if ('error' in result) {
+    if (result.error) {
       toast({
         variant: 'destructive',
         title: 'Authentication Error',

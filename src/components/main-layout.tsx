@@ -16,6 +16,7 @@ import {
   ChevronDown,
   School,
 } from "lucide-react";
+import { useAuth, type User as AuthUser } from "@/app/auth/auth-context";
 
 import {
   SidebarProvider,
@@ -39,7 +40,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
-import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
 
 
@@ -55,16 +55,16 @@ const unprotectedRoutes = ['/login', '/signup'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const user = useAuth();
   
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
   }
 
-  // AuthProvider is now responsible for redirecting and showing a loader.
-  // We can render the layout skeleton while it decides.
+  // The middleware now handles redirects, so we can render the layout skeleton.
   if (!user) {
-    return null;
+    // You might want to show a loading spinner here while the session is being verified.
+    return null; 
   }
 
 
@@ -127,7 +127,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search challenges..." className="pl-9" />
           </div>
-          <UserMenu />
+          <UserMenu user={user} />
         </header>
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
@@ -135,12 +135,10 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function UserMenu() {
-    const { user } = useAuth();
+function UserMenu({ user }: { user: AuthUser | null }) {
     
     const handleSignOut = async () => {
         await signOut();
-        window.location.href = '/login';
     }
 
   return (
