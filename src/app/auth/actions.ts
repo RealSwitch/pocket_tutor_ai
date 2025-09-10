@@ -18,7 +18,7 @@ async function createMockSession(email: string) {
     };
     const sessionCookie = JSON.stringify(sessionData);
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-    cookies().set('session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true });
+    cookies().set('session', sessionCookie, { maxAge: expiresIn, httpOnly: true });
 }
 
 export async function signInWithEmail(values: z.infer<typeof emailSchema>) {
