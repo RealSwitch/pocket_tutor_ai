@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { AddStudentDialog } from './add-student-dialog';
 
 
 export default function ClassroomPage({ params }: { params: { id: string } }) {
@@ -49,10 +50,7 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
            <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Students</CardTitle>
-              <Button size="sm">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Student
-              </Button>
+              <AddStudentDialog />
             </CardHeader>
             <CardContent>
                <Table>
@@ -122,5 +120,3 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    
