@@ -1,3 +1,4 @@
+
 import {
   Select,
   SelectContent,
@@ -8,9 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function SelectGrade() {
+export function SelectGrade({ onGradeChange }: { onGradeChange: (grade: string) => void }) {
   return (
-    <Select>
+    <Select onValueChange={onGradeChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a grade" />
       </SelectTrigger>
