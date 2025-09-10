@@ -19,8 +19,10 @@ export default function SubjectChallengePage() {
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [initialChallenge, setInitialChallenge] = useState<PersonalizedChallengeOutput | null>(null);
+  const [challenge, setChallenge] = useState<PersonalizedChallengeOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+
 
   useEffect(() => {
     if (selectedGrade) {
@@ -32,31 +34,31 @@ export default function SubjectChallengePage() {
     }
     // Reset chapter and challenge when grade changes
     setSelectedChapter(null);
-    setInitialChallenge(null);
+    setChallenge(null);
   }, [selectedGrade, subject]);
 
   const handleStartChallenge = async () => {
     if (!selectedChapter) return;
-    setIsLoading(true);
-    const challenge = await createChallenge(subject);
-    setInitialChallenge(challenge);
-    setIsLoading(false);
+    setIsInitialLoading(true);
+    const newChallenge = await createChallenge(subject);
+    setChallenge(newChallenge);
+    setIsInitialLoading(false);
   };
   
   const handleNewChallenge = async (forceEasy = false) => {
     setIsLoading(true);
     const newChallenge = await createChallenge(subject, forceEasy ? 'easy' : undefined);
-    setInitialChallenge(newChallenge);
+    setChallenge(newChallenge);
     setIsLoading(false);
   };
 
   const resetChallenge = () => {
-    setInitialChallenge(null);
+    setChallenge(null);
     setSelectedGrade(null);
     setSelectedChapter(null);
   }
 
-  if (initialChallenge) {
+  if (challenge) {
     return (
         <div className="flex flex-col h-screen overflow-hidden">
              <div className="mb-4 absolute top-6 left-6 z-10">
@@ -66,7 +68,7 @@ export default function SubjectChallengePage() {
                 </Button>
             </div>
             <ChallengeView 
-                initialChallenge={initialChallenge} 
+                initialChallenge={challenge} 
                 subject={subject} 
                 isLoadingChallenge={isLoading}
                 onNewChallenge={handleNewChallenge}
@@ -104,10 +106,10 @@ export default function SubjectChallengePage() {
         </div>
         <Button
           onClick={handleStartChallenge}
-          disabled={!selectedChapter || isLoading}
+          disabled={!selectedChapter || isInitialLoading}
           size="lg"
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isInitialLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Start Challenge
         </Button>
       </div>
