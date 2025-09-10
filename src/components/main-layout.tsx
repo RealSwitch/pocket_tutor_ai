@@ -14,7 +14,6 @@ import {
   Settings,
   LogOut,
   ChevronDown,
-  Loader2,
   School,
 } from "lucide-react";
 
@@ -42,7 +41,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "./ui/input";
 import { useAuth } from "@/app/auth/auth-context";
 import { signOut } from "@/app/auth/actions";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 
@@ -60,28 +58,15 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user } = useAuth();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // This effect handles redirection based on auth state.
-    // It's a client-side check. For robust protection, middleware is recommended.
-    if (!user && !unprotectedRoutes.includes(pathname)) {
-      router.push('/login');
-    } else {
-      setLoading(false);
-    }
-  }, [user, pathname, router]);
-
+  
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
   }
 
-  if (loading || !user) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+  if (!user) {
+    // AuthProvider is responsible for redirecting and showing a loader,
+    // so we can just return null here to avoid a flash of unauthenticated content.
+    return null;
   }
 
 
