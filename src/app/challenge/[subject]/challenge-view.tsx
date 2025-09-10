@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
 import type { EvaluateAnswerOutput } from "@/ai/flows/evaluate-answer-flow";
 import { createChallenge, evaluateStudentAnswer } from "../actions";
@@ -83,6 +83,7 @@ export function ChallengeView({
   const [challenge, setChallenge] = useState(initialChallenge);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [backgroundSvg, setBackgroundSvg] = useState<string | null>(null);
+  const [backgroundCache, setBackgroundCache] = useState<Record<string, string>>({});
   const [answer, setAnswer] = useState("");
   const [evaluationResult, setEvaluationResult] = useState<EvaluateAnswerOutput | null>(null);
   const [showSolution, setShowSolution] = useState(false);
@@ -116,7 +117,12 @@ export function ChallengeView({
     }
   }, [isLoadingChallenge]);
 
-  const fetchBackground = async (topic: string) => {
+  const fetchBackground = useCallback(async (topic: string) => {
+    if (backgroundCache[topic]) {
+        setBackgroundSvg(backgroundCache[topic]);
+        return;
+    }
+
     const lowerCaseSubject = subject.toLowerCase();
     try {
       let theme = null;
@@ -126,7 +132,8 @@ export function ChallengeView({
         theme = await generateScienceTheme({ topic });
       }
       
-      if (theme) {
+      if (theme?.svgBackground) {
+        setBackgroundCache(prevCache => ({...prevCache, [topic]: theme!.svgBackground}));
         setBackgroundSvg(theme.svgBackground);
       } else {
         setBackgroundSvg(null);
@@ -135,7 +142,7 @@ export function ChallengeView({
       console.error(`Error generating ${subject} theme:`, error);
       setBackgroundSvg(null);
     }
-  };
+  }, [subject, backgroundCache]);
 
   useEffect(() => {
     if (initialChallenge) {
@@ -146,7 +153,7 @@ export function ChallengeView({
       setShowSolution(false);
       setAttempts(0);
     }
-  }, [initialChallenge, subject]);
+  }, [initialChallenge, subject, fetchBackground]);
 
 
   const handleShowSolution = () => {
@@ -365,5 +372,3 @@ export function ChallengeView({
     </div>
   );
 }
-
-    
