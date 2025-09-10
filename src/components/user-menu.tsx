@@ -7,7 +7,7 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import type { User as AuthUser } from "@/app/auth/auth-context";
+import type { User as AuthUser } from "@/app/auth/session";
 
 import { Button } from "@/components/ui/button";
 import {

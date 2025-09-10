@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import {
   LayoutGrid,
@@ -9,8 +8,7 @@ import {
   Search,
   School,
 } from "lucide-react";
-import type { User as AuthUser } from "@/app/auth/auth-context";
-import { getSession } from "@/app/auth/session";
+import type { User as AuthUser } from "@/app/auth/session";
 
 import {
   SidebarProvider,
