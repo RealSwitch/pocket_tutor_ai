@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -53,18 +54,9 @@ const unprotectedRoutes = ['/login', '/signup'];
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { loading } = useAuth();
   
   if (unprotectedRoutes.includes(pathname)) {
     return <main className="flex-1">{children}</main>;
-  }
-  
-  if (loading) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-    )
   }
 
   return (

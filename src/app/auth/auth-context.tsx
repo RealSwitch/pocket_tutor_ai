@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -19,7 +20,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  loading: false, // Set loading to false by default
 });
 
 export const AuthProvider = ({
@@ -30,7 +31,7 @@ export const AuthProvider = ({
   user: User | null;
 }) => {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // No longer true by default
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

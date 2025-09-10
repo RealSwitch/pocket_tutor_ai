@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -7,10 +8,12 @@ export function middleware(request: NextRequest) {
 
   const isPublicPath = pathname === '/login' || pathname === '/signup';
 
+  // If there's no session cookie and the user is not on a public path, redirect to login
   if (!sessionCookie && !isPublicPath) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
+  // If there is a session cookie and the user is on a public path, redirect to home
   if (sessionCookie && isPublicPath) {
     return NextResponse.redirect(new URL('/', request.url));
   }
