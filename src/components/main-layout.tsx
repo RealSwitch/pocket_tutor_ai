@@ -36,8 +36,6 @@ const navItems = [
     icon: School,
     role: 'teacher',
   },
-  { href: '#', label: 'Leaderboards', icon: Trophy },
-  { href: '#', label: 'Profile', icon: User },
 ];
 
 export function MainLayout({
