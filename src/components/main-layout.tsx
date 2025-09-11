@@ -88,10 +88,10 @@ export function MainLayout({
                       className: 'bg-sidebar-background text-sidebar-foreground',
                     }}
                   >
-                    <Link href={item.href}>
+                    <a href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                    </Link>
+                    </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
