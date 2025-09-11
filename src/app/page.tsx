@@ -1,8 +1,4 @@
-
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
+import 'server-only';
 import {
   Calculator,
   Landmark,
@@ -34,6 +30,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from './(app)/layout';
+import Link from 'next/link';
 
 type Subject = {
   name: string;

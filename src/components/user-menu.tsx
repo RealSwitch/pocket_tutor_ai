@@ -23,10 +23,6 @@ import { signOut } from "@/app/auth/actions";
 
 export function UserMenu({ user }: { user: AuthUser }) {
     
-    const handleSignOut = async () => {
-        await signOut();
-    }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -55,7 +51,7 @@ export function UserMenu({ user }: { user: AuthUser }) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <form action={signOut}>
-            <button type="submit" className="w-full">
+            <button type="submit" className="w-full text-left">
                 <DropdownMenuItem>
                     <LogOut className="mr-2" />
                     <span>Log out</span>
