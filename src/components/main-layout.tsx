@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutGrid,
-  Trophy,
   Gift,
-  User,
   School,
 } from 'lucide-react';
 import type { User as AuthUser } from '@/app/auth/session';
@@ -88,10 +86,10 @@ export function MainLayout({
                       className: 'bg-sidebar-background text-sidebar-foreground',
                     }}
                   >
-                    <a href={item.href}>
+                    <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
