@@ -13,7 +13,7 @@ type Session = {
   isLoggedIn: boolean;
 };
 
-export function getSession(): Session {
+export async function getSession(): Promise<Session> {
   const sessionCookie = cookies().get('session')?.value
   if (!sessionCookie) {
     return { user: null, isLoggedIn: false }

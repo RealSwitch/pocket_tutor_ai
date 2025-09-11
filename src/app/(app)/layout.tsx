@@ -2,12 +2,12 @@ import 'server-only'
 import { MainLayout } from '@/components/main-layout';
 import { getSession, type User } from '@/app/auth/session';
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = getSession();
+  const session = await getSession();
   
   // The middleware should handle redirects, so user should not be null here.
   if (!session?.isLoggedIn || !session.user) {
