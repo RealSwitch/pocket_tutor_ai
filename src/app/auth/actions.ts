@@ -33,7 +33,8 @@ export async function signInWithEmail(values: z.infer<typeof formSchema>) {
   if (!validated.success) {
     // This won't be shown to the user with this pattern,
     // but it's good practice for validation.
-    return { error: 'Invalid form data.' };
+    // In a real app, you would return an error and display it.
+    return;
   }
 
   const sessionData = createMockSessionData(validated.data.email);
@@ -49,7 +50,7 @@ export async function signUpWithEmail(values: z.infer<typeof formSchema>) {
    // In a real app, you'd create a new user in the database here.
    const validated = formSchema.safeParse(values);
    if (!validated.success) {
-     return { error: 'Invalid form data.' };
+     return;
    }
 
   const sessionData = createMockSessionData(validated.data.email);
