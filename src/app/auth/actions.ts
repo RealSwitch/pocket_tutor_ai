@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -9,10 +10,12 @@ const formSchema = z.object({
   password: z.string().min(6),
 });
 
+export type UserRole = 'learner' | 'teacher';
+
 type SessionData = {
     email: string;
     isLoggedIn: true;
-    role: 'learner' | 'teacher';
+    role: UserRole;
 };
 
 function createMockSessionData(email: string): SessionData {

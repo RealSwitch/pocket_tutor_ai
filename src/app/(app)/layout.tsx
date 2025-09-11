@@ -1,20 +1,22 @@
+
+'use client';
+
 import { MainLayout } from '@/components/main-layout';
-import { getSession } from '@/app/auth/session';
+import { useAuth } from '@/app/auth/auth-context';
 
 export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = getSession();
-
-  // The middleware should protect all routes in this group,
-  // so user should never be null here.
-  if (!user) {
-    return null; 
+  const { session } = useAuth();
+  
+  // The AuthProvider should handle redirects, so user should not be null here.
+  if (!session?.isLoggedIn || !session.user) {
+    return null;
   }
 
   return (
-    <MainLayout user={user}>{children}</MainLayout>
+    <MainLayout user={session.user}>{children}</MainLayout>
   );
 }
