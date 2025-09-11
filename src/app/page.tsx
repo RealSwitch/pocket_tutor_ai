@@ -33,6 +33,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import AppLayout from './(app)/layout';
 
 type Subject = {
   name: string;
@@ -95,7 +96,7 @@ const leaderboard = [
   { name: 'Chen', points: 3120, avatar: 'https://picsum.photos/id/1025/100/100' },
 ];
 
-export default function Dashboard() {
+function Dashboard() {
   const progressValue = (3510 / 4000) * 100;
   return (
     <div className="space-y-6">
@@ -217,4 +218,12 @@ export default function Dashboard() {
       </div>
     </div>
   );
+}
+
+export default function Page() {
+    return (
+        <AppLayout>
+            <Dashboard />
+        </AppLayout>
+    )
 }

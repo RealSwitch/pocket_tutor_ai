@@ -1,14 +1,16 @@
-import Link from "next/link";
+
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   LayoutGrid,
   Trophy,
   Gift,
   User,
-  PanelLeft,
-  Search,
   School,
-} from "lucide-react";
-import type { User as AuthUser } from "@/app/auth/session";
+} from 'lucide-react';
+import type { User as AuthUser } from '@/app/auth/auth-context';
 
 import {
   SidebarProvider,
@@ -20,24 +22,32 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { Input } from "./ui/input";
-import { headers } from "next/headers";
-import { UserMenu } from "./user-menu";
-
+} from '@/components/ui/sidebar';
+import { Input } from './ui/input';
+import { UserMenu } from './user-menu';
+import { Search } from 'lucide-react';
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutGrid },
-  { href: "/rewards", label: "Rewards", icon: Gift },
-  { href: "/teacher", label: "Teacher Dashboard", icon: School, role: "teacher" },
-  { href: "#", label: "Leaderboards", icon: Trophy },
-  { href: "#", label: "Profile", icon: User },
+  { href: '/', label: 'Dashboard', icon: LayoutGrid },
+  { href: '/rewards', label: 'Rewards', icon: Gift },
+  {
+    href: '/teacher',
+    label: 'Teacher Dashboard',
+    icon: School,
+    role: 'teacher',
+  },
+  { href: '#', label: 'Leaderboards', icon: Trophy },
+  { href: '#', label: 'Profile', icon: User },
 ];
 
-
-export function MainLayout({ children, user }: { children: React.ReactNode, user: AuthUser }) {
-  const headersList = headers();
-  const pathname = headersList.get('x-pathname') || '/';
+export function MainLayout({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: AuthUser;
+}) {
+  const pathname = usePathname();
 
   return (
     <SidebarProvider>
@@ -67,26 +77,26 @@ export function MainLayout({ children, user }: { children: React.ReactNode, user
         <SidebarContent>
           <SidebarMenu>
             {navItems.map((item) => {
-               if (item.role && item.role !== user?.role) {
+              if (item.role && item.role !== user?.role) {
                 return null;
               }
               return (
-              <SidebarMenuItem key={item.label}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={{
-                    children: item.label,
-                    className: "bg-sidebar-background text-sidebar-foreground",
-                  }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              )
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={{
+                      children: item.label,
+                      className: 'bg-sidebar-background text-sidebar-foreground',
+                    }}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
             })}
           </SidebarMenu>
         </SidebarContent>
