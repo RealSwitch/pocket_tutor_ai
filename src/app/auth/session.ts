@@ -15,7 +15,7 @@ type Session = {
 };
 
 export async function getSession(): Promise<Session> {
-  const sessionCookie = cookies().get('session')?.value
+  const sessionCookie = (await cookies()).get('session')?.value
   if (!sessionCookie) {
     return { user: null, isLoggedIn: false }
   }
@@ -34,3 +34,4 @@ export async function getSession(): Promise<Session> {
 
   return { user: null, isLoggedIn: false };
 }
+
