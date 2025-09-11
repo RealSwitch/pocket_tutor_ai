@@ -1,6 +1,7 @@
 import 'server-only'
 import { MainLayout } from '@/components/main-layout';
 import { getSession, type User } from '@/app/auth/session';
+import { redirect } from 'next/navigation';
 
 export default async function AppLayout({
   children,
@@ -9,10 +10,8 @@ export default async function AppLayout({
 }>) {
   const session = await getSession();
   
-  // The middleware should handle redirects, so user should not be null here.
   if (!session?.isLoggedIn || !session.user) {
-    // This can be null in a theoretical case, but middleware makes it unlikely
-    return null;
+    redirect('/login');
   }
 
   return (
