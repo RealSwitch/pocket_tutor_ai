@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,12 @@ const mockMessages = [
 
 
 export function ChatRoom() {
-  const onlineCount = Math.floor(Math.random() * 6) + 1; // Mock online count
+  const [onlineCount, setOnlineCount] = useState(1);
+
+  useEffect(() => {
+    // Generate a random number on the client after the initial render
+    setOnlineCount(Math.floor(Math.random() * 6) + 1);
+  }, []);
 
   return (
     <Card className="flex flex-col h-[600px]">
