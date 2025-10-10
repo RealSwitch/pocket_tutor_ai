@@ -28,7 +28,7 @@ const QuizQuestionSchema = z.object({
 
 const GenerateStudyGuideOutputSchema = z.object({
   topic: z.string().describe('The specific topic covered by the study guide.'),
-  summary: z.string().describe('A detailed, personalized summary of the chapter, formatted in Markdown and tailored to the student\'s learning style. Use LaTeX for all mathematical notation.'),
+  summary: z.array(z.string()).describe('A detailed, personalized summary of the chapter, broken down into smaller, digestible "pages" or "slides". Each item in the array is a separate page. Formatted in Markdown, using LaTeX for all mathematical notation.'),
   quiz: z.array(QuizQuestionSchema).length(10).describe('An array of 10 quiz questions based on the summary.'),
 });
 export type GenerateStudyGuideOutput = z.infer<typeof GenerateStudyGuideOutputSchema>;
@@ -58,12 +58,13 @@ const studyGuidePrompt = ai.definePrompt({
 
     1.  **Generate a Personalized Summary:**
         *   Create a comprehensive summary of the chapter: **{{{chapterTitle}}}**.
+        *   **CRITICAL:** Break the summary down into smaller, digestible "pages" or "slides". The 'summary' field in the output MUST be an array of strings, where each string is a self-contained page. Aim for 5-7 pages.
         *   The summary MUST be tailored to the student's learning style: **'{{{learningStyle}}}'**.
             *   For a **visual** learner, include descriptions of diagrams, charts, or visual analogies. Use Markdown for structure.
             *   For a **reading/writing** learner, provide a detailed, text-rich explanation with clear headings, bullet points, and definitions.
             *   For a **kinesthetic** learner, suggest real-world examples or simple activities they can do.
             *   For an **auditory** learner, structure the text as if it were a script for a podcast, with conversational cues.
-        *   The summary should be written in Markdown format.
+        *   Each page of the summary should be written in Markdown format.
         *   All mathematical equations, variables, and symbols must be formatted using LaTeX (e.g., '$x^2 + y^2 = r^2$').
 
     2.  **Create a 10-Question Quiz:**

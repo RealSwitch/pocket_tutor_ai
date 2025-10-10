@@ -1,15 +1,14 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { GenerateStudyGuideOutput, QuizQuestion } from '@/ai/flows/generate-study-guide';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Check, X, Clock, Trophy, Sparkles } from 'lucide-react';
+import { Check, X, Clock, Trophy, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 import { useToast } from '@/hooks/use-toast';
@@ -17,8 +16,10 @@ import { useToast } from '@/hooks/use-toast';
 const TWO_HOURS_IN_SECONDS = 2 * 60 * 60;
 
 export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [isStudying, setIsStudying] = useState(true);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [score, setScore] = useState(0);
@@ -26,7 +27,9 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
   const { toast } = useToast();
 
   const currentQuestion: QuizQuestion | undefined = studyGuide.quiz[currentQuestionIndex];
-  
+  const summaryPages = studyGuide.summary || [];
+  const isLastSlide = currentSlide === summaryPages.length - 1;
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isQuizStarted && !isQuizFinished && timeLeft > 0) {
@@ -34,7 +37,7 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     }
-    if (timeLeft === 0) {
+    if (timeLeft === 0 && isQuizStarted && !isQuizFinished) {
       handleFinishQuiz();
     }
     return () => clearInterval(timer);
@@ -55,6 +58,22 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
       handleFinishQuiz();
     }
   };
+  
+  const handleNextSlide = () => {
+    if (!isLastSlide) {
+      setCurrentSlide(prev => prev + 1);
+    } else {
+      setIsStudying(false);
+      setIsQuizStarted(true);
+    }
+  };
+
+  const handlePreviousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(prev => prev - 1);
+    }
+  };
+
 
   const handleFinishQuiz = () => {
     let finalScore = 0;
@@ -148,7 +167,7 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
             </div>
             <div className="p-4 border rounded-lg min-h-[100px] bg-background/70">
               <p className="font-semibold text-card-foreground leading-relaxed">
-                <Latex>{currentQuestion.question}</Latex>
+                {currentQuestion && <Latex>{currentQuestion.question}</Latex>}
               </p>
             </div>
             <RadioGroup
@@ -156,7 +175,7 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
               onValueChange={handleAnswerSelect}
               className="space-y-2"
             >
-              {currentQuestion.options.map((option, index) => (
+              {currentQuestion && currentQuestion.options.map((option, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <RadioGroupItem value={option} id={`option-${index}`} />
                   <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer p-3 border rounded-md hover:bg-muted/50 has-[input:checked]:bg-primary has-[input:checked]:text-primary-foreground has-[input:checked]:border-primary">
@@ -185,17 +204,25 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
             Study Guide: {studyGuide.topic}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full pr-6">
-            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none">
-              <Latex>{studyGuide.summary}</Latex>
+        <CardContent className="flex-1 overflow-hidden p-6">
+            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none h-full">
+                <Latex>{summaryPages[currentSlide] || ''}</Latex>
             </div>
-          </ScrollArea>
         </CardContent>
-        <CardFooter>
-          <Button onClick={() => setIsQuizStarted(true)} size="lg">
-            Start 10-Question Quiz
-          </Button>
+        <CardFooter className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+                 <Button variant="outline" onClick={handlePreviousSlide} disabled={currentSlide === 0}>
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                    Previous
+                </Button>
+                 <Button onClick={handleNextSlide}>
+                    {isLastSlide ? 'Start Quiz' : 'Next'}
+                    {!isLastSlide && <ChevronRight className="ml-2 h-4 w-4" />}
+                </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+                Page {currentSlide + 1} of {summaryPages.length}
+            </p>
         </CardFooter>
       </Card>
     </div>

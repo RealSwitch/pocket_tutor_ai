@@ -27,7 +27,7 @@ export async function getStudyGuide(
     // Return a fallback guide in case of an error
     return {
       topic: chapterTitle,
-      summary: `We're having trouble generating a study guide for ${chapterTitle}. Please try again in a moment.`,
+      summary: [`We're having trouble generating a study guide for ${chapterTitle}. Please try again in a moment.`],
       quiz: [],
     };
   }
