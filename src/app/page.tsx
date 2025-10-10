@@ -9,6 +9,7 @@ import {
   Trophy,
   Medal,
   Sparkles,
+  BookOpen,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -31,12 +32,14 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AppLayout from './(app)/layout';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 type Subject = {
   name: string;
   description: string;
   icon: LucideIcon;
   href: string;
+  studyHref: string;
   color: string;
 };
 
@@ -46,6 +49,7 @@ const subjects: Subject[] = [
     description: 'Puzzles & logic games',
     icon: Calculator,
     href: '/challenge/Mathematics',
+    studyHref: '/study/Mathematics',
     color: 'text-blue-500',
   },
   {
@@ -53,6 +57,7 @@ const subjects: Subject[] = [
     description: 'Money simulations',
     icon: Landmark,
     href: '/challenge/Accounting',
+    studyHref: '/study/Accounting',
     color: 'text-green-500',
   },
   {
@@ -60,6 +65,7 @@ const subjects: Subject[] = [
     description: 'Map explorations',
     icon: Globe,
     href: '/challenge/Geography',
+    studyHref: '/study/Geography',
     color: 'text-orange-500',
   },
   {
@@ -67,6 +73,7 @@ const subjects: Subject[] = [
     description: 'Ecosystem balance games',
     icon: Dna,
     href: '/challenge/Life%20Sciences',
+    studyHref: '/study/Life%20Sciences',
     color: 'text-purple-500',
   },
   {
@@ -74,6 +81,7 @@ const subjects: Subject[] = [
     description: 'Market simulations',
     icon: TrendingUp,
     href: '/challenge/Economics',
+    studyHref: '/study/Economics',
     color: 'text-red-500',
   },
   {
@@ -81,6 +89,7 @@ const subjects: Subject[] = [
     description: 'Virtual lab experiments',
     icon: FlaskConical,
     href: '/challenge/Physical%20Science',
+    studyHref: '/study/Physical%20Science',
     color: 'text-yellow-500',
   },
 ];
@@ -109,27 +118,40 @@ function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="font-headline">Choose Your Challenge</CardTitle>
+            <CardTitle className="font-headline">Choose Your Subject</CardTitle>
             <CardDescription>
-              Select a subject to start a new gamified lesson.
+              Select a subject to start a study session or a gamified challenge.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {subjects.map((subject) => (
-                <Link href={subject.href} key={subject.name}>
-                  <div className="group flex flex-col items-center justify-center space-y-3 rounded-lg border bg-card p-6 text-center transition-all hover:shadow-lg hover:-translate-y-1 hover:border-primary">
+                <div key={subject.name} className="group flex flex-col space-y-3 rounded-lg border bg-card p-6 text-center transition-all hover:shadow-lg hover:border-primary">
+                  <div className="flex justify-center">
                     <div className="rounded-full bg-background p-4 border">
                       <subject.icon
                         className={`h-8 w-8 ${subject.color} transition-colors group-hover:text-primary`}
                       />
                     </div>
-                    <p className="font-semibold">{subject.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {subject.description}
-                    </p>
                   </div>
-                </Link>
+                  <p className="font-semibold">{subject.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {subject.description}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                     <Button asChild variant="outline" size="sm">
+                       <Link href={subject.studyHref}>
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        Study
+                       </Link>
+                     </Button>
+                     <Button asChild size="sm">
+                       <Link href={subject.href}>
+                         Challenge
+                       </Link>
+                     </Button>
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>
