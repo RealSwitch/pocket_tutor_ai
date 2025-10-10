@@ -26,43 +26,44 @@ import { useToast } from "@/hooks/use-toast";
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 
-function ChallengeSkeleton({ progress }: { progress: number }) {
+function ChallengeSkeleton() {
     return (
         <Card className="w-full max-w-2xl shadow-2xl">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
-                        <Skeleton className="h-8 w-48 mb-2" />
-                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-8 w-48 mb-2 animate-pulse" />
+                        <Skeleton className="h-4 w-32 animate-pulse" />
                     </div>
                     <div className="flex flex-col items-end gap-2">
-                        <Skeleton className="h-8 w-24 rounded-full" />
-                        <Skeleton className="h-6 w-20 rounded-full" />
+                        <Skeleton className="h-8 w-24 rounded-full animate-pulse" />
+                        <Skeleton className="h-6 w-20 rounded-full animate-pulse" />
                     </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-6">
                  <div className="space-y-2">
                     <p className="text-sm font-medium text-center text-muted-foreground">Generating your next challenge...</p>
-                    <Progress value={progress} className="w-full" />
+                    <Skeleton className="h-4 w-full animate-pulse" />
                 </div>
                 <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
                     <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-full animate-pulse" />
+                        <Skeleton className="h-4 w-full animate-pulse" />
+                        <Skeleton className="h-4 w-3/4 animate-pulse" />
                     </div>
                 </div>
                 <div className="space-y-4">
-                     <Skeleton className="h-24 w-full" />
+                     <Skeleton className="h-24 w-full animate-pulse" />
                 </div>
+
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex gap-2">
-                    <Skeleton className="h-10 w-36" />
-                    <Skeleton className="h-10 w-28" />
+                    <Skeleton className="h-10 w-36 animate-pulse" />
+                    <Skeleton className="h-10 w-28 animate-pulse" />
                 </div>
-                <Skeleton className="h-10 w-40" />
+                <Skeleton className="h-10 w-40 animate-pulse" />
             </CardFooter>
         </Card>
     )
@@ -87,7 +88,6 @@ export function ChallengeView({
   const [evaluationResult, setEvaluationResult] = useState<EvaluateAnswerOutput | null>(null);
   const [showSolution, setShowSolution] = useState(false);
   const { toast } = useToast();
-  const [progress, setProgress] = useState(0);
 
   // Gamification State
   const [xp, setXp] = useState(100); // Starting XP
@@ -96,25 +96,6 @@ export function ChallengeView({
   const [attempts, setAttempts] = useState(0);
 
   const streakProgress = (correctStreak / 10) * 100;
-
-  useEffect(() => {
-    if (isLoadingChallenge) {
-      setProgress(0);
-      const interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 95) {
-            clearInterval(interval);
-            return 95;
-          }
-          return prev + 5;
-        });
-      }, 200);
-
-      return () => clearInterval(interval);
-    } else {
-        setProgress(100);
-    }
-  }, [isLoadingChallenge]);
 
   const fetchBackground = useCallback(async (topic: string) => {
     const lowerCaseSubject = subject.toLowerCase();
@@ -260,7 +241,7 @@ export function ChallengeView({
       className="flex-1 flex items-center justify-center p-4 transition-all duration-1000"
       style={backgroundStyle}
     >
-        {isLoadingChallenge ? <ChallengeSkeleton progress={progress} /> : (
+        {isLoadingChallenge ? <ChallengeSkeleton /> : (
             <Card className="w-full max-w-2xl shadow-2xl animate-in fade-in-50 zoom-in-95 duration-500 bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                 <div className="flex justify-between items-start">
