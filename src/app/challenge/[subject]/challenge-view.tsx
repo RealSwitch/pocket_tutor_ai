@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles, Star } from "lucide-react";
+import { Loader2, Zap, Lightbulb, RefreshCw, Check, Sparkles, Star, Target, CheckCircle, FileText } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -135,8 +135,8 @@ export function ChallengeView({
         const pointsToSubtract = 20;
         setXp(prev => Math.max(0, prev - pointsToSubtract));
         toast({
-            title: "Solution Revealed",
-            description: `You lost ${pointsToSubtract} XP.`,
+            title: "Intel Revealed",
+            description: `You used a hint and lost ${pointsToSubtract} XP.`,
             variant: "destructive"
         });
     }
@@ -168,21 +168,21 @@ export function ChallengeView({
             const bonusXp = 50;
             setXp(prev => prev + bonusXp);
             toast({
-                title: "Amazing!",
-                description: `10 in a row! You earned a ${bonusXp} XP bonus!`,
+                title: "Incredible!",
+                description: `10 objectives cleared in a row! You earned a ${bonusXp} XP bonus!`,
             });
             setCorrectStreak(0); // Reset streak after bonus
         } else {
              toast({
-                title: "Correct!",
-                description: `You are on a ${newStreak} question streak!`,
+                title: "Objective Cleared!",
+                description: `You are on a ${newStreak} mission streak!`,
              });
         }
       } else {
         // Correct, but not on the first try. No streak bonus, but no penalty.
          toast({
-            title: "Finally Correct!",
-            description: "Good job working through it.",
+            title: "Objective Cleared!",
+            description: "Good job working through the problem.",
          });
       }
       setQuestionsAnswered(prev => prev + 1);
@@ -193,15 +193,15 @@ export function ChallengeView({
       setXp(newXp);
       setCorrectStreak(0); // Reset streak on fail
       toast({
-        title: "Not quite...",
-        description: `You lost ${pointsToSubtract} XP. Try again or check the solution.`,
+        title: "Mission Failed...",
+        description: `You lost ${pointsToSubtract} XP. Re-evaluate your strategy or request intel.`,
         variant: "destructive"
       });
 
       if (newXp === 0) {
         toast({
             title: "XP Depleted!",
-            description: "You'll now only receive easy questions to build your XP back up.",
+            description: "You'll now only receive easy missions to build your XP back up.",
         });
         // The next challenge will be forced to be easy
       }
@@ -248,10 +248,10 @@ export function ChallengeView({
                     <div>
                     <CardTitle className="font-headline text-2xl flex items-center gap-2">
                         <Zap className="text-primary" />
-                        {subject} Challenge
+                        {subject} Mission
                     </CardTitle>
                     <CardDescription>
-                        {challenge.topic}
+                        Topic: {challenge.topic}
                     </CardDescription>
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -276,43 +276,39 @@ export function ChallengeView({
                 <CardContent className="space-y-6">
                 <div className="space-y-1">
                     <div className="flex justify-between text-sm font-medium text-muted-foreground">
-                    <span>10-Question Streak</span>
+                    <span>10-Mission Streak</span>
                     <span>{correctStreak} / 10</span>
                     </div>
                     <Progress value={streakProgress} className="h-2" />
                 </div>
-                <div className="p-4 border rounded-lg min-h-[120px] bg-background/70 space-y-4">
-                    <>
-                        <p className="font-semibold text-card-foreground leading-relaxed">
-                        <Latex>{challenge.problem}</Latex>
-                        </p>
-                        <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
-                        {challenge.subQuestions.map((sq, index) => (
-                            <li key={index}><Latex>{sq.question}</Latex></li>
-                        ))}
-                        </ul>
-                    </>
-                </div>
-
+                
                 <div className="space-y-4">
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><Target className="h-5 w-5 text-primary"/> Mission Objective</h3>
+                    <div className="p-4 border rounded-lg bg-background/70">
+                         <Latex>{challenge.problem}</Latex>
+                    </div>
+                </div>
+                
+                <div className="space-y-4">
+                    <h3 className="font-semibold text-lg flex items-center gap-2"><FileText className="h-5 w-5 text-primary"/> Your Report</h3>
                     <Textarea
-                    placeholder="Type your answer here..."
+                    placeholder="File your report here. Detail your findings and conclusion..."
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
-                    className="min-h-[100px] bg-background/70"
+                    className="min-h-[120px] bg-background/70 font-mono"
                     disabled={isEvaluating || evaluationResult?.isCorrect || showSolution}
                     />
                     {evaluationResult && (
                     <Alert className={getFeedbackColor()}>
                         <Sparkles className="h-4 w-4" />
-                        <AlertTitle>Feedback</AlertTitle>
+                        <AlertTitle>{evaluationResult.isCorrect ? "Report Accepted" : "Report Needs Revision"}</AlertTitle>
                         <AlertDescription>{evaluationResult.feedback}</AlertDescription>
                     </Alert>
                     )}
                     {showSolution && (
                     <Alert variant="default" className="bg-muted/50">
                         <Lightbulb className="h-4 w-4" />
-                        <AlertTitle>Solution</AlertTitle>
+                        <AlertTitle>Intel Briefing</AlertTitle>
                         <AlertDescription className="whitespace-pre-wrap"><Latex>{challenge.solution}</Latex></AlertDescription>
                     </Alert>
                     )}
@@ -321,15 +317,15 @@ export function ChallengeView({
                 <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={handleShowSolution} disabled={showSolution}>
-                    <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Solution" : "Show Solution"}
+                    <Lightbulb className="mr-2 h-4 w-4" /> {showSolution ? "Intel Revealed" : "Request Intel"}
                     </Button>
                     <Button
                     className="bg-green-600 hover:bg-green-700"
                     disabled={isEvaluating || !answer.trim() || evaluationResult?.isCorrect || showSolution}
                     onClick={handleSubmitAnswer}
                     >
-                    {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-                    Submit
+                    {isEvaluating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                    Submit Report
                     </Button>
                 </div>
                 <Button
@@ -338,7 +334,7 @@ export function ChallengeView({
                     disabled={(!evaluationResult?.isCorrect && !showSolution) || isLoadingChallenge}
                 >
                     <RefreshCw className="mr-2 h-4 w-4" />
-                    New Challenge
+                    New Mission
                 </Button>
                 </CardFooter>
             </Card>
