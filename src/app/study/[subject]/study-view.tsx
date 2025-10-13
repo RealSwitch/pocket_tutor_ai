@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { GenerateStudyGuideOutput, QuizQuestion } from '@/ai/flows/generate-study-guide';
+import type { GenerateStudyGuideOutput, QuizQuestion, Slide } from '@/ai/flows/generate-study-guide';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -13,6 +13,8 @@ import { Check, X, Clock, Trophy, Sparkles, ChevronLeft, ChevronRight } from 'lu
 import Latex from 'react-latex-next';
 import 'katex/dist/katex.min.css';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const TWO_HOURS_IN_SECONDS = 2 * 60 * 60;
 
@@ -28,7 +30,8 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
   const { toast } = useToast();
 
   const currentQuestion: QuizQuestion | undefined = studyGuide.quiz[currentQuestionIndex];
-  const summaryPages = studyGuide.summary || [];
+  const summaryPages: Slide[] = studyGuide.summary || [];
+  const currentSlideData: Slide | undefined = summaryPages[currentSlide];
   const isLastSlide = currentSlide === summaryPages.length - 1;
 
   useEffect(() => {
@@ -206,9 +209,22 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
             Study Guide: {studyGuide.topic}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden p-6">
-            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none h-full">
-                <Latex>{summaryPages[currentSlide] || ''}</Latex>
+        <CardContent className="flex-1 overflow-hidden p-6 flex flex-col gap-4">
+            {currentSlideData?.imageUrl ? (
+                <div className="relative w-full h-1/2 rounded-lg overflow-hidden">
+                    <Image 
+                        src={currentSlideData.imageUrl}
+                        alt={currentSlideData.text}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="object-contain"
+                    />
+                </div>
+            ) : (
+                <Skeleton className="w-full h-1/2 rounded-lg" />
+            )}
+            <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none h-1/2 overflow-y-auto">
+                {currentSlideData && <Latex>{currentSlideData.text}</Latex>}
             </div>
         </CardContent>
         <CardFooter className="flex justify-between items-center">
