@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -41,6 +42,7 @@ export function StudyView({ studyGuide }: { studyGuide: GenerateStudyGuideOutput
       handleFinishQuiz();
     }
     return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isQuizStarted, isQuizFinished, timeLeft]);
 
 
