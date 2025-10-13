@@ -49,7 +49,7 @@ const scienceThemePrompt = ai.definePrompt({
     6.  IMPORTANT: The background of the SVG itself must be transparent. The strokes and fills of the elements should have a very low opacity (e.g., opacity="0.1" or opacity="0.05") to be "not too visible". Use a color that will be visible on both light and dark backgrounds, like a neutral gray or a muted version of a theme color.
     7.  The final output must be ONLY the SVG string, enclosed in <svg> tags. Do not include any other text, explanations, or markdown formatting.
   `,
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-2.5-flash',
 });
 
 const generateScienceThemeFlow = ai.defineFlow(
