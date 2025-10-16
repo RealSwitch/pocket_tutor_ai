@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectGrade } from "@/components/select-grade";
@@ -15,6 +15,7 @@ import Link from "next/link";
 
 export default function SubjectChallengePage() {
   const params = useParams<{ subject: string }>();
+  const router = useRouter();
   const subject = useMemo(() => decodeURIComponent(params.subject as string) as CurriculumSubject, [params.subject]);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
@@ -54,8 +55,8 @@ export default function SubjectChallengePage() {
   const resetChallenge = () => {
     setChallenge(null);
     setSelectedChapter(null);
-    // Use window.location to force a full page reload and ensure session is re-evaluated
-    window.location.href = `/challenge/${encodeURIComponent(subject)}`;
+    // Use the router to navigate without a full page reload
+    router.push(`/challenge/${encodeURIComponent(subject)}`);
   };
 
   if (isInitialLoading) {
@@ -93,10 +94,10 @@ export default function SubjectChallengePage() {
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
         <div className="mb-4 w-full max-w-md">
              <Button asChild variant="outline" size="sm">
-                <a href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                     <ChevronLeft className="h-4 w-4" />
                     <span>Back to Dashboard</span>
-                </a>
+                </Link>
             </Button>
         </div>
       <div className="w-full max-w-md space-y-6 text-center">
