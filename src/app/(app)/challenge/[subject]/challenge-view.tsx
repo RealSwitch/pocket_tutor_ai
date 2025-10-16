@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
 import type { EvaluateAnswerOutput } from "@/ai/flows/evaluate-answer-flow";
-import { evaluateStudentAnswer } from "../../../challenge/actions";
+import { evaluateStudentAnswer } from "@/app/challenge/actions";
 import { generateMathTheme } from "@/ai/flows/math-theme-generation";
 import { generateScienceTheme } from "@/ai/flows/science-theme-generation";
 import {

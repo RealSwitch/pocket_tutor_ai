@@ -2,12 +2,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectGrade } from "@/components/select-grade";
 import { ChapterSelection } from "@/components/chapter-selection";
-import { getStudyGuide } from "../../../study/actions";
+import { getStudyGuide } from "@/app/study/actions";
 import { StudyView } from "./study-view";
 import type { GenerateStudyGuideOutput } from "@/ai/flows/generate-study-guide";
 import { curriculumData, type Subject as CurriculumSubject, type Chapter } from "@/lib/curriculum-data";
@@ -15,7 +15,6 @@ import Link from "next/link";
 
 export default function SubjectStudyPage() {
   const params = useParams<{ subject: string }>();
-  const router = useRouter();
   const subject = useMemo(() => decodeURIComponent(params.subject as string) as CurriculumSubject, [params.subject]);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
@@ -45,10 +44,11 @@ export default function SubjectStudyPage() {
     }
     setIsLoading(false);
   };
-
+  
   const resetStudySession = () => {
-    router.push(`/study/${encodeURIComponent(subject)}`);
-  }
+    setStudyGuide(null);
+    setSelectedChapter(null);
+  };
 
   if (isLoading) {
     return (
@@ -65,8 +65,8 @@ export default function SubjectStudyPage() {
     return (
         <div className="flex flex-col h-screen overflow-hidden -m-6">
              <div className="mb-4 absolute top-4 left-4 z-10">
-                <Button onClick={resetStudySession} variant="outline" size="sm" className="flex items-center gap-2 bg-background/80">
-                     <ChevronLeft className="h-4 w-4" />
+                <Button variant="outline" size="sm" className="flex items-center gap-2 bg-background/80" onClick={resetStudySession}>
+                    <ChevronLeft className="h-4 w-4" />
                     <span>Change Chapter</span>
                 </Button>
             </div>
@@ -77,6 +77,14 @@ export default function SubjectStudyPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
+       <div className="mb-4 w-full max-w-md">
+             <Button asChild variant="outline" size="sm">
+                <Link href="/" className="flex items-center gap-2">
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Back to Dashboard</span>
+                </Link>
+            </Button>
+        </div>
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight font-headline">

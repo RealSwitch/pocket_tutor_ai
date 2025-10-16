@@ -2,12 +2,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SelectGrade } from "@/components/select-grade";
 import { ChapterSelection } from "@/components/chapter-selection";
-import { createChallenge } from "../../../challenge/actions";
+import { createChallenge } from "@/app/challenge/actions";
 import { ChallengeView } from "./challenge-view";
 import type { PersonalizedChallengeOutput } from "@/ai/flows/personalized-challenge-generation";
 import { curriculumData, type Subject as CurriculumSubject, type Chapter } from "@/lib/curriculum-data";
@@ -15,7 +15,6 @@ import Link from "next/link";
 
 export default function SubjectChallengePage() {
   const params = useParams<{ subject: string }>();
-  const router = useRouter();
   const subject = useMemo(() => decodeURIComponent(params.subject as string) as CurriculumSubject, [params.subject]);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
@@ -53,9 +52,11 @@ export default function SubjectChallengePage() {
   };
 
   const resetChallenge = () => {
-    // Navigate to the same page to force a state reset
-    router.push(`/challenge/${encodeURIComponent(subject)}`);
-  }
+    setChallenge(null);
+    setSelectedChapter(null);
+    // Use window.location to force a full page reload and ensure session is re-evaluated
+    window.location.href = `/challenge/${encodeURIComponent(subject)}`;
+  };
 
   if (isInitialLoading) {
     return (
@@ -72,8 +73,8 @@ export default function SubjectChallengePage() {
     return (
         <div className="flex flex-col min-h-[calc(100vh-4rem)] overflow-hidden -m-6">
              <div className="mb-4 absolute top-4 left-4 z-10">
-                <Button onClick={resetChallenge} variant="outline" size="sm" className="flex items-center gap-2 bg-background/80">
-                     <ChevronLeft className="h-4 w-4" />
+                <Button variant="outline" size="sm" className="flex items-center gap-2 bg-background/80" onClick={resetChallenge}>
+                    <ChevronLeft className="h-4 w-4" />
                     <span>Change Chapter</span>
                 </Button>
             </div>
@@ -90,6 +91,14 @@ export default function SubjectChallengePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] p-4">
+        <div className="mb-4 w-full max-w-md">
+             <Button asChild variant="outline" size="sm">
+                <a href="/" className="flex items-center gap-2">
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Back to Dashboard</span>
+                </a>
+            </Button>
+        </div>
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight font-headline">
