@@ -92,10 +92,10 @@ export default function SubjectChallengePage() {
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
        <div className="mb-4 absolute top-6 left-6 z-10">
         <Button asChild variant="outline" size="sm">
-          <Link href="/" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2">
             <ChevronLeft className="h-4 w-4" />
             <span>Back to Dashboard</span>
-          </Link>
+          </a>
         </Button>
       </div>
       <div className="w-full max-w-md space-y-6 text-center">
@@ -127,5 +127,3 @@ export default function SubjectChallengePage() {
     </div>
   );
 }
-
-    
