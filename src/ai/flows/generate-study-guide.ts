@@ -66,16 +66,15 @@ const studyGuidePrompt = ai.definePrompt({
 
     1.  **Generate a Personalized Summary:**
         *   Create a comprehensive summary of the chapter: **{{{chapterTitle}}}**.
-        *   **CRITICAL:** The summary must be broken down into smaller, digestible "slides". The 'summary' field in the output MUST be an array of slide objects.
-        *   For each slide, you must provide two fields: 'text' and 'imagePrompt'.
-        *   **CRITICAL:** The 'text' for each slide MUST NOT exceed 35 words.
+        *   **CRITICAL:** The summary must be broken down into an array of slide objects. The 'summary' field in the output MUST be an array.
+        *   For each slide object in the array, you must provide two fields: 'text' and 'imagePrompt'.
+        *   **CRITICAL:** The 'text' for each slide MUST NOT exceed 35 words. Be concise.
         *   The 'imagePrompt' must be a short, descriptive prompt (e.g., "A diagram of a plant cell," "Graph showing exponential growth") that an AI image generator can use to create a relevant visual.
         *   The summary MUST be tailored to the student's learning style: **'{{{learningStyle}}}'**.
             *   For a **visual** learner, include descriptions of diagrams, charts, or visual analogies. The image prompts should reflect this.
             *   For a **reading/writing** learner, provide a detailed, text-rich explanation with clear headings and bullet points.
             *   For a **kinesthetic** learner, suggest real-world examples or simple activities.
             *   For an **auditory** learner, structure the text as if it were a script for a podcast.
-        *   The text of each slide should be written in Markdown format.
         *   All mathematical equations, variables, and symbols must be formatted using LaTeX (e.g., '$x^2 + y^2 = r^2$').
 
     2.  **Create a 10-Question Quiz:**
