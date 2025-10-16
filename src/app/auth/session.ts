@@ -14,8 +14,8 @@ type Session = {
   isLoggedIn: boolean;
 };
 
-export async function getSession(): Promise<Session> {
-  const sessionCookie = (await cookies()).get('session')?.value
+export function getSession(): Session {
+  const sessionCookie = cookies().get('session')?.value
   if (!sessionCookie) {
     return { user: null, isLoggedIn: false }
   }
@@ -34,4 +34,3 @@ export async function getSession(): Promise<Session> {
 
   return { user: null, isLoggedIn: false };
 }
-
