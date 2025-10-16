@@ -140,7 +140,7 @@ export default function ParentDashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="font-headline flex items-center gap-2 text-lg">
-                <TrendingDown className="h-5 w-5 text-red-500" />
+                <TrendingUp className="h-5 w-5 text-red-500 rotate-180" />
                 Areas for Improvement
             </CardTitle>
           </CardHeader>
