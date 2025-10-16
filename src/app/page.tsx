@@ -1,3 +1,4 @@
+
 import 'server-only';
 import {
   Calculator,
@@ -30,7 +31,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import AppLayout from './(app)/layout';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -102,7 +102,7 @@ const leaderboard = [
   { name: 'Chen', points: 3120, avatar: 'https://picsum.photos/id/1025/100/100' },
 ];
 
-function Dashboard() {
+export default function Dashboard() {
   const progressValue = (3510 / 4000) * 100;
   return (
     <div className="space-y-6">
@@ -237,12 +237,4 @@ function Dashboard() {
       </div>
     </div>
   );
-}
-
-export default function Page() {
-    return (
-        <AppLayout>
-            <Dashboard />
-        </AppLayout>
-    )
 }
