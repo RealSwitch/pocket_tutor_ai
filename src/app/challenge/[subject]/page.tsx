@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,9 +51,7 @@ export default function SubjectChallengePage() {
   };
 
   const resetChallenge = () => {
-    setChallenge(null);
-    setSelectedGrade(null);
-    setSelectedChapter(null);
+    window.location.href = `/challenge/${encodeURIComponent(subject)}`;
   }
 
   if (isInitialLoading) {
