@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'Learnify',
-  description: 'A Gamified Learning Platform',
+  title: 'PocketTutorAI',
+  description: 'Your Personal AI Tutor',
 };
 
 export default function RootLayout({
