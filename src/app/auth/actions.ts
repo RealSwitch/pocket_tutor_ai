@@ -10,7 +10,7 @@ const formSchema = z.object({
   password: z.string().min(6),
 });
 
-export type UserRole = 'learner' | 'teacher';
+export type UserRole = 'learner' | 'teacher' | 'parent';
 
 type SessionData = {
     email: string;
@@ -19,7 +19,12 @@ type SessionData = {
 };
 
 function createMockSessionData(email: string): SessionData {
-    const role = email.includes('teacher') ? 'teacher' : 'learner';
+    let role: UserRole = 'learner';
+    if (email.includes('teacher')) {
+        role = 'teacher';
+    } else if (email.includes('parent')) {
+        role = 'parent';
+    }
     return {
         email: email,
         isLoggedIn: true,

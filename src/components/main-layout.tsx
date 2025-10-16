@@ -7,6 +7,8 @@ import {
   LayoutGrid,
   Gift,
   School,
+  Store,
+  HeartHandshake,
 } from 'lucide-react';
 import type { User as AuthUser } from '@/app/auth/session';
 
@@ -26,13 +28,20 @@ import { UserMenu } from './user-menu';
 import { Search } from 'lucide-react';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutGrid },
-  { href: '/rewards', label: 'Rewards', icon: Gift },
+  { href: '/', label: 'Dashboard', icon: LayoutGrid, role: 'learner' },
+  { href: '/rewards', label: 'Rewards', icon: Gift, role: 'learner' },
+  { href: '/stores', label: 'Stores', icon: Store, role: 'learner' },
   {
     href: '/teacher',
     label: 'Teacher Dashboard',
     icon: School,
     role: 'teacher',
+  },
+  {
+    href: '/parent',
+    label: 'Parent Dashboard',
+    icon: HeartHandshake,
+    role: 'parent',
   },
 ];
 
