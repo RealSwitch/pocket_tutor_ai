@@ -1,6 +1,6 @@
 # Learnify: A Gamified Learning Platform
 
-Welcome to Learnify, an AI-powered, gamified learning platform built with Next.js and Firebase Studio. This application is designed to make learning more engaging and effective by providing personalized challenges, interactive study guides, and a rewarding user experience.
+Welcome to PocketTutorAI, an AI-powered, gamified learning platform built with Next.js and Firebase Studio. This application is designed to make learning more engaging and effective by providing personalized challenges, interactive study guides, and a rewarding user experience.
 
 ## ✨ Features
 
