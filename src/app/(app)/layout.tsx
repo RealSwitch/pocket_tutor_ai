@@ -8,7 +8,7 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
+  const session = getSession();
   
   if (!session?.isLoggedIn || !session.user) {
     redirect('/login');
