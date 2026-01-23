@@ -1,3 +1,4 @@
+
 import 'server-only'
 import { MainLayout } from '@/components/main-layout';
 import { getSession, type User } from '@/app/auth/session';
@@ -8,7 +9,7 @@ export default async function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = getSession();
+  const session = await getSession();
   
   if (!session?.isLoggedIn || !session.user) {
     redirect('/login');
