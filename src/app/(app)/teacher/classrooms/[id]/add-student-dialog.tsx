@@ -16,14 +16,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusCircle } from "lucide-react";
 
-export function AddStudentDialog() {
+export function AddStudentDialog({ onAddStudent }: { onAddStudent: (name: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-    console.log("New Student:", data);
+    const name = formData.get('name') as string;
+    if (name) {
+        onAddStudent(name);
+    }
+    event.currentTarget.reset();
     setIsOpen(false);
   };
 

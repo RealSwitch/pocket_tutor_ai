@@ -1,10 +1,13 @@
 
+'use client';
+
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { mockClassrooms, type Classroom } from '@/lib/mock-data';
+import { notFound, useParams } from 'next/navigation';
+import { useState } from 'react';
+import { mockClassrooms, type Student } from '@/lib/mock-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Users, BookOpen, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -20,12 +23,29 @@ import { Progress } from '@/components/ui/progress';
 import { ChatRoom } from './chatroom';
 
 
-export default function ClassroomPage({ params }: { params: { id: string } }) {
+export default function ClassroomPage() {
+  const params = useParams<{ id: string }>();
   const classroom = mockClassrooms.find((c) => c.id === params.id);
+  
+  const [students, setStudents] = useState<Student[]>(classroom?.students || []);
 
   if (!classroom) {
     notFound();
   }
+
+  const handleAddStudent = (name: string) => {
+    const newStudent: Student = {
+        id: `s${Date.now()}`,
+        name,
+        avatar: `https://picsum.photos/seed/${Date.now()}/100/100`,
+        progress: 0,
+        strengths: [],
+        weaknesses: [],
+        recentActivity: [],
+    };
+    setStudents(prevStudents => [...prevStudents, newStudent]);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -52,7 +72,7 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
            <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Students</CardTitle>
-              <AddStudentDialog />
+              <AddStudentDialog onAddStudent={handleAddStudent} />
             </CardHeader>
             <CardContent>
                <Table>
@@ -64,7 +84,7 @@ export default function ClassroomPage({ params }: { params: { id: string } }) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {classroom.students.map((student) => (
+                  {students.map((student) => (
                     <TableRow key={student.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
